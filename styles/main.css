@@ -122,6 +122,7 @@ input[type="date"] {
   position: sticky;
   top: 0;
   z-index: 40;
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 .app-header__inner {
@@ -1455,11 +1456,12 @@ body.on-landing .workspace {
   }
 
   .app-header {
+    padding-top: max(calc(env(safe-area-inset-top, 0px) + 0.5rem), 3.1rem);
     border-bottom: 1px solid #DCD8CE;
   }
 
   .app-header__inner {
-    padding: 0.65rem 1rem;
+    padding: 0.65rem 1rem 0.7rem;
     flex-wrap: nowrap;
     gap: 0.5rem;
   }
@@ -1688,5 +1690,11 @@ body.on-landing .workspace {
     display: grid;
     border-top: 1px solid #DCD8CE;
     box-shadow: 0 -2px 10px rgba(17, 18, 21, 0.05);
+  }
+
+  dialog.ledger-dialog {
+    max-height: calc(100dvh - 6rem);
+    margin: auto;
+    border-radius: 12px;
   }
 }
