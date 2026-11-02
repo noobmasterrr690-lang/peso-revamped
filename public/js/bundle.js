@@ -4999,14 +4999,24 @@ class PesoApp {
     const state = this.store.getState();
     const metrics = this.store.getMetrics();
     const expenses = state.expenses || [];
+    const nowStr = new Date().toLocaleDateString('en-PH', { dateStyle: 'medium' });
     const todayStr = new Date().toISOString().slice(0, 10);
 
     const scale = 2;
-    const width = 520;
-    const itemRowHeight = 32;
-    const baseHeight = 560;
-    const itemsHeight = expenses.length === 0 ? 44 : Math.min(expenses.length, 25) * itemRowHeight + 24;
-    const height = baseHeight + itemsHeight;
+    const width = 460;
+    const outerPad = 18;
+    const cardPad = 24;
+    const summaryRowH = 34;
+    const itemRowH = 31;
+
+    // Calculate exact dynamic height matching #printable-monthly-receipt in the app
+    const headerH = 74;
+    const summaryH = summaryRowH * 5;
+    const totalBoxH = 48;
+    const itemizedHeaderH = 40;
+    const itemizedRowsH = expenses.length === 0 ? 32 : expenses.length * itemRowH;
+    const cardH = cardPad * 2 + headerH + summaryH + totalBoxH + itemizedHeaderH + itemizedRowsH;
+    const height = cardH + outerPad * 2 + 4;
 
     const canvas = document.createElement('canvas');
     canvas.width = width * scale;
@@ -5014,60 +5024,59 @@ class PesoApp {
     const ctx = canvas.getContext('2d');
     ctx.scale(scale, scale);
 
-    // Outer background
-    ctx.fillStyle = '#07090E';
+    // 1. Warm Ledger Paper outer background (--bg-canvas: #F6F5F0)
+    ctx.fillStyle = '#F6F5F0';
     ctx.fillRect(0, 0, width, height);
 
-    // Receipt Card Surface
-    const pad = 20;
-    const cardW = width - pad * 2;
-    const cardH = height - pad * 2;
-    ctx.fillStyle = '#111622';
-    ctx.strokeStyle = '#263147';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    if (ctx.roundRect) {
-      ctx.roundRect(pad, pad, cardW, cardH, 14);
-    } else {
-      ctx.rect(pad, pad, cardW, cardH);
-    }
-    ctx.fill();
-    ctx.stroke();
+    const cardX = outerPad;
+    const cardY = outerPad;
+    const cardW = width - outerPad * 2;
 
-    // Top Accent Bar
-    ctx.fillStyle = '#10B981';
-    ctx.fillRect(pad + 1, pad + 1, cardW - 2, 5);
+    // 2. Tactile offset shadow (--shadow-tactile: 3px 3px 0px #111215)
+    ctx.fillStyle = '#111215';
+    ctx.fillRect(cardX + 3, cardY + 3, cardW, cardH);
 
-    const leftX = pad + 28;
-    const rightX = width - pad - 28;
-    let y = pad + 42;
+    // 3. Crisp Alabaster Receipt Card (--bg-surface: #FFFFFF, --border-hairline: 1px solid #111215)
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(cardX, cardY, cardW, cardH);
+    ctx.strokeStyle = '#111215';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(cardX + 0.5, cardY + 0.5, cardW - 1, cardH - 1);
 
-    // Header
-    ctx.fillStyle = '#F8FAFC';
-    ctx.font = '700 20px "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif';
+    const leftX = cardX + cardPad;
+    const rightX = cardX + cardW - cardPad;
+    let y = cardY + cardPad + 18;
+
+    // 4. .receipt-header (centered title + student name & date + 2px dashed #111215 bottom border)
     ctx.textAlign = 'center';
+    ctx.fillStyle = '#111215';
+    ctx.font = '800 18px "Space Grotesk", -apple-system, BlinkMacSystemFont, sans-serif';
     ctx.fillText('PESO STUDENT RECEIPT', width / 2, y);
 
-    y += 22;
-    ctx.fillStyle = '#94A3B8';
-    ctx.font = '500 12px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
-    ctx.fillText('Pocket Expense & Savings Organizer (Cash Only)', width / 2, y);
+    y += 21;
+    ctx.fillStyle = '#4A4D55';
+    ctx.font = '500 12.2px "JetBrains Mono", monospace';
+    ctx.fillText(`${state.student.fullName || 'Student'} • ${nowStr}`, width / 2, y);
 
-    y += 20;
-    ctx.fillStyle = '#64748B';
-    ctx.font = '500 11px "JetBrains Mono", monospace';
-    ctx.fillText(
-      `STUDENT: ${(state.student.name || 'Student').toUpperCase()}  |  DATE: ${todayStr}`,
-      width / 2,
-      y
-    );
+    y += 16;
+    ctx.save();
+    ctx.strokeStyle = '#111215';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 4]);
+    ctx.beginPath();
+    ctx.moveTo(leftX, y);
+    ctx.lineTo(rightX, y);
+    ctx.stroke();
+    ctx.restore();
 
-    // Dashed divider helper
-    const drawDashedLine = (lineY) => {
+    y += 16;
+
+    // Helper for 1px dotted #D5D2C8 line
+    const drawDottedDivider = (lineY) => {
       ctx.save();
-      ctx.strokeStyle = '#263147';
+      ctx.strokeStyle = '#D5D2C8';
       ctx.lineWidth = 1;
-      ctx.setLineDash([5, 4]);
+      ctx.setLineDash([2, 2]);
       ctx.beginPath();
       ctx.moveTo(leftX, lineY);
       ctx.lineTo(rightX, lineY);
@@ -5075,122 +5084,95 @@ class PesoApp {
       ctx.restore();
     };
 
-    const drawRow = (label, value, valueColor = '#F8FAFC', isBold = false) => {
+    // Helper for .receipt-line
+    const drawReceiptLine = (label, value, isBoldLabel = false) => {
+      const textY = y + 14;
       ctx.textAlign = 'left';
-      ctx.fillStyle = isBold ? '#F8FAFC' : '#94A3B8';
-      ctx.font = `${isBold ? '700' : '500'} 13px "Inter", -apple-system, sans-serif`;
-      ctx.fillText(label, leftX, y);
+      ctx.fillStyle = '#111215';
+      ctx.font = `${isBoldLabel ? '700' : '500'} 13.1px "JetBrains Mono", monospace`;
+      ctx.fillText(label, leftX, textY);
 
       ctx.textAlign = 'right';
-      ctx.fillStyle = valueColor;
-      ctx.font = `${isBold ? '700' : '600'} 13px "JetBrains Mono", monospace`;
-      ctx.fillText(value, rightX, y);
-      y += 28;
+      ctx.fillStyle = '#111215';
+      ctx.font = '700 13.1px "JetBrains Mono", monospace';
+      ctx.fillText(value, rightX, textY);
+
+      y += summaryRowH;
+      drawDottedDivider(y - 6);
     };
 
-    y += 20;
-    drawDashedLine(y);
-    y += 26;
+    // 5. Exact 5 summary rows matching #printable-monthly-receipt
+    drawReceiptLine('Starting Balance', formatPHP(metrics.initialTotal));
+    drawReceiptLine('+ Allowance & Cash In', `+${formatPHP(metrics.totalInflows)}`);
+    drawReceiptLine(`\u2212 Total Expenses (${expenses.length})`, `-${formatPHP(metrics.totalExpenses)}`);
+    drawReceiptLine('= Total Net Balance', formatPHP(metrics.totalNetBalance), true);
+    drawReceiptLine('\u2212 Locked in Savings Goals', `-${formatPHP(metrics.totalLockedSavings)}`);
 
-    // Financial rows
-    drawRow('Starting Cash', formatPHP(metrics.baselineTotal), '#F8FAFC');
-    drawRow('+ Allowance & Cash In', formatPHP(metrics.inflowTotal, true), '#10B981');
-    drawRow('- Total Expenses', `-${formatPHP(metrics.expenseTotal)}`, '#F43F5E');
-
-    drawDashedLine(y - 12);
-    y += 10;
-
-    drawRow('= Total Net Cash', formatPHP(metrics.netBalance), '#F8FAFC', true);
-    drawRow('- Locked in Savings Goals', `-${formatPHP(metrics.allocatedSavingsTotal)}`, '#F59E0B');
-
-    // Highlight box for Available to Spend & Safe to Spend Today
+    // 6. .receipt-line--total (2px solid #111215 top & bottom, 800 weight, emerald value)
     y += 4;
-    ctx.fillStyle = 'rgba(16, 185, 129, 0.10)';
-    ctx.strokeStyle = 'rgba(16, 185, 129, 0.35)';
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#111215';
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    if (ctx.roundRect) {
-      ctx.roundRect(leftX - 10, y - 18, rightX - leftX + 20, 68, 10);
-    } else {
-      ctx.rect(leftX - 10, y - 18, rightX - leftX + 20, 68);
-    }
-    ctx.fill();
+    ctx.moveTo(leftX, y);
+    ctx.lineTo(rightX, y);
     ctx.stroke();
 
+    const totalTextY = y + 23;
     ctx.textAlign = 'left';
-    ctx.fillStyle = '#F8FAFC';
-    ctx.font = '700 14px "Plus Jakarta Sans", sans-serif';
-    ctx.fillText('AVAILABLE TO SPEND', leftX + 2, y + 4);
+    ctx.fillStyle = '#111215';
+    ctx.font = '800 15.2px "JetBrains Mono", monospace';
+    ctx.fillText('AVAILABLE TO SPEND', leftX, totalTextY);
 
     ctx.textAlign = 'right';
-    ctx.fillStyle = '#10B981';
-    ctx.font = '700 17px "JetBrains Mono", monospace';
-    ctx.fillText(formatPHP(metrics.spendableBalance), rightX - 2, y + 4);
+    ctx.fillStyle = '#0B6E4F';
+    ctx.font = '800 15.2px "JetBrains Mono", monospace';
+    ctx.fillText(formatPHP(metrics.spendableBalance), rightX, totalTextY);
 
+    const totalBottomY = y + 36;
+    ctx.strokeStyle = '#111215';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(leftX, totalBottomY);
+    ctx.lineTo(rightX, totalBottomY);
+    ctx.stroke();
+
+    y = totalBottomY + 26;
+
+    // 7. ITEMIZED EXPENSES section
     ctx.textAlign = 'left';
-    ctx.fillStyle = '#94A3B8';
-    ctx.font = '600 12px "Inter", sans-serif';
-    ctx.fillText(`SAFE TO SPEND TODAY (${metrics.daysRemaining}d left)`, leftX + 2, y + 32);
-
-    ctx.textAlign = 'right';
-    ctx.fillStyle = '#38BDF8';
-    ctx.font = '700 14px "JetBrains Mono", monospace';
-    ctx.fillText(formatPHP(metrics.dailySafeToSpend), rightX - 2, y + 32);
-
-    y += 76;
-    drawDashedLine(y);
-    y += 24;
-
-    // Itemized Expenses Section
-    ctx.textAlign = 'left';
-    ctx.fillStyle = '#94A3B8';
-    ctx.font = '700 11px "Inter", sans-serif';
-    ctx.fillText(`ITEMIZED CASH EXPENSES (${expenses.length})`, leftX, y);
-    y += 22;
+    ctx.fillStyle = '#111215';
+    ctx.font = '700 12.5px "JetBrains Mono", monospace';
+    ctx.fillText('ITEMIZED EXPENSES', leftX, y);
+    y += 12;
 
     if (expenses.length === 0) {
-      ctx.fillStyle = '#64748B';
-      ctx.font = '500 12px "Inter", sans-serif';
-      ctx.fillText('No expenses recorded in this cycle yet.', leftX, y);
-      y += 28;
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#4A4D55';
+      ctx.font = '500 12.2px "JetBrains Mono", monospace';
+      ctx.fillText('No expenses logged yet.', leftX, y + 14);
     } else {
-      const visibleExpenses = expenses.slice(0, 25);
-      for (const exp of visibleExpenses) {
-        const rawTitle = `${exp.date.slice(5)}  ${exp.title}`;
-        const truncatedTitle = rawTitle.length > 34 ? `${rawTitle.slice(0, 31)}...` : rawTitle;
+      for (const exp of expenses) {
+        const rowTextY = y + 14;
+        const rawLeft = `${exp.date} \u2014 ${exp.title}`;
+        const truncatedLeft = rawLeft.length > 36 ? `${rawLeft.slice(0, 33)}...` : rawLeft;
 
         ctx.textAlign = 'left';
-        ctx.fillStyle = '#E2E8F0';
-        ctx.font = '500 12px "Inter", sans-serif';
-        ctx.fillText(truncatedTitle, leftX, y);
+        ctx.fillStyle = '#111215';
+        ctx.font = '500 12.2px "JetBrains Mono", monospace';
+        ctx.fillText(truncatedLeft, leftX, rowTextY);
 
         ctx.textAlign = 'right';
-        ctx.fillStyle = '#F43F5E';
-        ctx.font = '600 12px "JetBrains Mono", monospace';
-        ctx.fillText(`-${formatPHP(exp.amount)}`, rightX, y);
-        y += itemRowHeight;
-      }
-      if (expenses.length > 25) {
-        ctx.textAlign = 'left';
-        ctx.fillStyle = '#64748B';
-        ctx.font = '500 11px "Inter", sans-serif';
-        ctx.fillText(`+ ${expenses.length - 25} more expense entries...`, leftX, y);
-        y += 22;
+        ctx.fillStyle = '#111215';
+        ctx.font = '700 12.2px "JetBrains Mono", monospace';
+        ctx.fillText(`-${formatPHP(exp.amount)}`, rightX, rowTextY);
+
+        y += itemRowH;
+        drawDottedDivider(y - 5);
       }
     }
 
-    drawDashedLine(height - pad - 44);
-    ctx.textAlign = 'center';
-    ctx.fillStyle = '#64748B';
-    ctx.font = '600 10px "JetBrains Mono", monospace';
-    ctx.fillText(
-      `VERIFIED CASH LEDGER  |  REF: ${state.student.studentId || 'PESO-STD'}`,
-      width / 2,
-      height - pad - 20
-    );
-
     const dataUrl = canvas.toDataURL('image/png');
-    const safeName = (state.student.name || 'Student').replace(/[^a-zA-Z0-9_-]/g, '_');
+    const safeName = (state.student.fullName || 'Student').replace(/[^a-zA-Z0-9_-]/g, '_');
     const link = document.createElement('a');
     link.href = dataUrl;
     link.download = `PESO_Receipt_${safeName}_${todayStr}.png`;
