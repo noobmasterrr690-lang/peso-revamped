@@ -250,22 +250,19 @@ class PesoApp {
     const headerActionsEl = document.getElementById('header-actions');
     if (headerActionsEl) {
       const dbStatus = this.store.getDatabaseStatus();
-      const dbLabel = dbStatus.connected ? 'SQLite DB: Synced' : 'SQLite DB';
+      const dbLabel = dbStatus.connected ? 'DB Synced' : 'SQLite DB';
 
       if (isLanding) {
         if (state.student.authenticated) {
           headerActionsEl.innerHTML = `
-            <button type="button" class="btn btn--sm" id="header-btn-db-status" title="Inspect SQLite Database & GitHub Sync">
+            <button type="button" class="btn btn--sm desktop-only-header-btn" id="header-btn-db-status" title="Inspect SQLite Database & GitHub Sync">
               ${dbLabel}
             </button>
             <button type="button" class="btn btn--sm" id="header-btn-install-share" title="Install on iOS/Android or Share with Friends">
-              Install / Share App
-            </button>
-            <button type="button" class="btn btn--sm" data-nav-target="account" title="View Student Account">
-              Hi, ${escapeHTML(state.student.fullName?.split(' ')[0] || 'Student')}
+              Share App
             </button>
             <button type="button" class="btn btn--sm btn--primary" data-nav-target="dashboard">
-              Open Dashboard
+              Dashboard
             </button>
             <button type="button" class="btn btn--sm btn--danger" id="header-btn-logout" title="Sign Out">
               Sign Out
@@ -273,14 +270,14 @@ class PesoApp {
           `;
         } else {
           headerActionsEl.innerHTML = `
-            <button type="button" class="btn btn--sm" id="header-btn-db-status" title="Inspect SQLite Database & GitHub Sync">
+            <button type="button" class="btn btn--sm desktop-only-header-btn" id="header-btn-db-status" title="Inspect SQLite Database & GitHub Sync">
               ${dbLabel}
             </button>
             <button type="button" class="btn btn--sm" id="header-btn-install-share" title="Install on iOS/Android or Share with Friends">
-              Install / Share App
+              Share App
             </button>
             <button type="button" class="btn btn--sm btn--emerald" id="header-btn-demo-mode">
-              Enter Demo Mode
+              Demo
             </button>
             <button type="button" class="btn btn--sm btn--primary" id="header-btn-sign-in">
               Sign In
@@ -290,17 +287,17 @@ class PesoApp {
       } else {
         const isDemo = Boolean(state.meta?.isDemoMode);
         headerActionsEl.innerHTML = `
-          <button type="button" class="btn btn--sm" id="header-btn-db-status" title="Inspect SQLite Database & GitHub Sync">
+          <button type="button" class="btn btn--sm desktop-only-header-btn" id="header-btn-db-status" title="Inspect SQLite Database & GitHub Sync">
             ${dbLabel}
           </button>
           <button type="button" class="btn btn--sm" id="header-btn-install-share" title="Install on iOS/Android or Share with Friends">
-            Install / Share App
+            Share App
           </button>
           <button type="button" class="btn btn--sm mobile-only-account-btn ${this.activeModule === 'account' ? 'btn--primary' : ''}" data-nav-target="account">
             Account
           </button>
           ${isDemo ? `
-            <button type="button" class="btn btn--sm" id="header-btn-reset-demo" title="Reset sample student data">
+            <button type="button" class="btn btn--sm desktop-only-header-btn" id="header-btn-reset-demo" title="Reset sample student data">
               Reset Demo
             </button>
           ` : ''}

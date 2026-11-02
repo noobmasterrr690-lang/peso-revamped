@@ -550,9 +550,11 @@ export function computeLedgerMetrics(state) {
     elapsedDaysInPeriod = Math.max(1, totalDaysInPeriod - remainingDaysInPeriod + 1);
   }
 
-  // Live "Safe-to-Spend Today" metric: (Remaining Period Budget / Remaining Days in Period)
-  const safeToSpendToday = remainingPeriodBudget > 0
-    ? roundCurrency(remainingPeriodBudget / remainingDaysInPeriod)
+  // Live "Safe-to-Spend Today" metric:
+  // Uses Remaining Period Budget if a budget cap is set (> 0), or falls back to Spendable Cash Balance for new users
+  const activeRemainingPool = totalBudget > 0 ? remainingPeriodBudget : spendableBalance;
+  const safeToSpendToday = activeRemainingPool > 0
+    ? roundCurrency(activeRemainingPool / remainingDaysInPeriod)
     : 0;
 
   const dailyBurnRate = roundCurrency(totalExpenses / elapsedDaysInPeriod);

@@ -76,27 +76,28 @@ export function renderDashboardModule(state, metrics) {
   const overBudgetCats = metrics.categoryBreakdown.filter((c) => c.status === 'BREACH');
   const presets = (state.quickPresets && state.quickPresets.length > 0) ? state.quickPresets : QUICK_EXPENSE_PRESETS;
   const isZeroBalance = metrics.spendableBalance === 0 && (state.expenses || []).length === 0;
+  const activePool = metrics.totalBudget > 0 ? metrics.remainingPeriodBudget : metrics.spendableBalance;
 
   return `
     <div class="page-intro">
       <div>
         <h1 class="page-title">Hello, ${escapeHTML(firstName)}</h1>
-        <p class="page-subtitle">Here is your daily allowance guide and spending summary.</p>
+        <p class="page-subtitle">Daily cash guide and spending summary.</p>
       </div>
       <div class="page-actions">
         <button type="button" class="btn btn--primary" id="btn-open-quick-log-modal">+ Quick Log</button>
-        <button type="button" class="btn" data-nav-target="balance">Add Allowance</button>
-        <button type="button" class="btn btn--emerald" data-nav-target="savings">Savings Goals</button>
+        <button type="button" class="btn" data-nav-target="balance">Add Cash</button>
+        <button type="button" class="btn btn--emerald" data-nav-target="savings">Savings</button>
       </div>
     </div>
 
     ${overBudgetCats.length > 0 ? `
       <div class="alert-banner alert-banner--breach">
         <div>
-          <strong>Budget Notice:</strong> You went over your spending limit in
+          <strong>Budget Notice:</strong> Over limit in
           <strong>${overBudgetCats.map((c) => escapeHTML(c.name)).join(', ')}</strong>.
         </div>
-        <button type="button" class="btn btn--sm" data-nav-target="budget">Adjust Limits</button>
+        <button type="button" class="btn btn--sm" data-nav-target="budget">Adjust</button>
       </div>
     ` : ''}
 
@@ -104,31 +105,31 @@ export function renderDashboardModule(state, metrics) {
     <section class="coach-hero" aria-label="Daily Allowance Guide">
       <div>
         <span class="coach-hero__kicker">
-          ${isZeroBalance ? 'New Student Setup' : (metrics.remainingPeriodBudget > 0 ? 'Daily Allowance Guide' : 'Budget Limit Reached')}
+          ${isZeroBalance ? 'New Account' : (activePool > 0 ? 'Daily Allowance Guide' : 'Budget Limit Reached')}
         </span>
         <h2 class="coach-hero__headline">
           ${isZeroBalance
-            ? 'Starting Balance: <span class="coach-hero__amount">₱0.00</span>'
-            : `You can safely spend <span class="coach-hero__amount">${formatPHP(metrics.safeToSpendToday)}</span> today.`}
+            ? 'Starting Cash: <span class="coach-hero__amount">₱0.00</span>'
+            : `Safe to spend: <span class="coach-hero__amount">${formatPHP(metrics.safeToSpendToday)}</span> today`}
         </h2>
         <p class="coach-hero__explain">
           ${isZeroBalance
-            ? 'You are starting clean with ₱0.00! Click <strong>"Add Allowance"</strong> to record your physical cash allowance to begin.'
-            : `You have <strong>${formatPHP(Math.max(0, metrics.remainingPeriodBudget))}</strong> left in your ${escapeHTML(state.budget.period.toLowerCase())} budget for the next <strong>${metrics.remainingDaysInPeriod} days</strong>.`}
+            ? 'Tap <strong>Add Cash</strong> above to record your pocket allowance and get started.'
+            : `<strong>${formatPHP(Math.max(0, activePool))}</strong> left for the next <strong>${metrics.remainingDaysInPeriod} days</strong>.`}
         </p>
       </div>
 
       <div class="coach-hero__buckets">
         <div class="bucket-box bucket-box--dark">
-          <div class="bucket-box__label">Pocket Money Left</div>
+          <div class="bucket-box__label">Pocket Cash Left</div>
           <div class="bucket-box__val currency">${formatPHP(metrics.spendableBalance)}</div>
-          <div class="bucket-box__note">Available to spend right now</div>
+          <div class="bucket-box__note">Available right now</div>
         </div>
 
         <div class="bucket-box">
           <div class="bucket-box__label">Tucked in Savings</div>
           <div class="bucket-box__val currency" style="color:var(--emerald);">${formatPHP(metrics.totalLockedSavings)}</div>
-          <div class="bucket-box__note">Protected from accidental spending</div>
+          <div class="bucket-box__note">Protected savings</div>
         </div>
       </div>
     </section>
@@ -474,7 +475,7 @@ export function renderExpensesModule(state, metrics, filters = {}) {
         </div>
       </div>
 
-      <div style="padding:0.85rem 1.35rem; background:var(--bg-vellum); border-bottom:var(--border-hairline); display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:0.75rem;">
+      <div class="expense-filter-bar">
         <div class="field" style="margin-bottom:0;">
           <label for="flt-search">Search</label>
           <input type="search" id="flt-search" value="${escapeHTML(search)}" placeholder="Search expenses...">
@@ -845,37 +846,37 @@ export function renderBalanceModule(state, metrics) {
     </section>
 
     <!-- SINGLE PHYSICAL CASH CARD WITH QUICK RECONCILIATION -->
-    <section class="stat-card stat-card--emerald" style="padding:1.35rem 1.6rem; margin-bottom:1.25rem;">
-      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem;">
+    <section class="stat-card stat-card--emerald" style="margin-bottom:1.25rem;">
+      <div class="wallet-hero-row">
         <div>
           <span class="status-badge status-badge--nominal">Physical Cash Flow</span>
-          <div class="stat-label" style="font-size:0.92rem; margin-top:0.4rem;">Pocket Cash (Available to Spend)</div>
-          <div class="stat-value currency" style="font-size:2.4rem; font-weight:700; margin-top:0.25rem;">
+          <div class="stat-label" style="font-size:0.86rem; margin-top:0.4rem;">Pocket Cash (Available)</div>
+          <div class="stat-value currency" style="margin-top:0.2rem;">
             ${formatPHP(metrics.spendableBalance)}
           </div>
         </div>
 
-        <div style="display:flex; flex-direction:column; gap:0.4rem; background:var(--bg-vellum); padding:0.85rem 1.15rem; border:var(--border-hairline); min-width:240px; font-size:0.84rem;">
-          <div style="display:flex; justify-content:space-between; gap:1rem;">
+        <div class="wallet-summary-box">
+          <div style="display:flex; justify-content:space-between; gap:0.75rem;">
             <span style="color:var(--ink-secondary);">Total Net Cash:</span>
             <strong>${formatPHP(metrics.totalNetBalance)}</strong>
           </div>
-          <div style="display:flex; justify-content:space-between; gap:1rem;">
+          <div style="display:flex; justify-content:space-between; gap:0.75rem;">
             <span style="color:var(--ink-secondary);">Locked in Savings:</span>
             <strong style="color:var(--emerald);">${formatPHP(metrics.totalLockedSavings)}</strong>
           </div>
-          <div style="display:flex; justify-content:space-between; gap:1rem;">
+          <div style="display:flex; justify-content:space-between; gap:0.75rem;">
             <span style="color:var(--ink-secondary);">Total Cash Added:</span>
             <strong style="color:var(--emerald);">+${formatPHP(metrics.totalInflows)}</strong>
           </div>
-          <div style="display:flex; justify-content:space-between; gap:1rem;">
+          <div style="display:flex; justify-content:space-between; gap:0.75rem;">
             <span style="color:var(--ink-secondary);">Total Cash Spent:</span>
             <strong style="color:var(--vermilion);">-${formatPHP(metrics.totalExpenses)}</strong>
           </div>
         </div>
       </div>
 
-      <form class="form-quick-wallet-sync" data-sync-wallet="cash" style="margin-top:1rem; padding-top:1rem; border-top:var(--border-dashed); display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap;">
+      <form class="form-quick-wallet-sync wallet-sync-form" data-sync-wallet="cash">
         <span style="font-size:0.82rem; font-weight:700;">Count Cash on Hand:</span>
         <input
           type="number"
@@ -884,7 +885,7 @@ export function renderBalanceModule(state, metrics) {
           min="0"
           placeholder="Actual ₱ bills & coins in pocket"
           required
-          style="padding:0.4rem 0.65rem; font-size:0.85rem; border:var(--border-hairline); flex:1; min-width:200px; max-width:320px;"
+          class="wallet-sync-input"
         >
         <button type="submit" class="btn btn--sm">Update Cash Count</button>
       </form>
@@ -1133,17 +1134,17 @@ export function renderLandingPage(state, activeAuthTab = 'register') {
     <div class="landing-container">
       <!-- HERO BANNER -->
       <section class="landing-hero" aria-label="Welcome to PESO">
-        <div class="landing-badge">Student Budgeting &amp; Allowance App — Web, iOS &amp; Android</div>
+        <div class="landing-badge">Student Cash &amp; Allowance App</div>
         <h1 class="landing-title">Stretch your student allowance without the stress.</h1>
         <p class="landing-lead">
-          PESO (Personal Expense &amp; Spending Organizer) helps students manage daily physical cash spending, pocket money, and campus allowance, calculate how much is safe to spend today, and lock money in savings so you do not run out before the end of the month.
+          Manage your daily pocket cash, know how much is safe to spend today, and set aside savings so your allowance lasts all month.
         </p>
-        <div style="display:flex; justify-content:center; gap:0.65rem; flex-wrap:wrap; margin-top:1.15rem;">
+        <div style="display:flex; justify-content:center; gap:0.55rem; flex-wrap:wrap; margin-top:1rem;">
           <button type="button" class="btn btn--sm btn--primary" data-open-install-share="true">
-            Install App (iOS &amp; Android) / Send to Friends
+            Install / Share App
           </button>
           <button type="button" class="btn btn--sm" data-open-db-modal="true">
-            SQLite Database &amp; GitHub Sync
+            Database &amp; GitHub Sync
           </button>
         </div>
       </section>

@@ -57,13 +57,42 @@ html {
   font-family: var(--font-sans);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+  touch-action: pan-y;
 }
 
 body {
   min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+  touch-action: pan-y;
+  position: relative;
   background-color: var(--bg-canvas);
   display: flex;
   flex-direction: column;
+}
+
+.app-header,
+.workspace,
+.ledger-card,
+.stat-card,
+.coach-hero,
+.landing-container,
+.landing-card,
+.pillar-card,
+.thermal-receipt,
+.grid-main-side > *,
+.grid-2 > *,
+.grid-3 > *,
+.landing-grid > *,
+.landing-pillars > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 /* Tabular Monospace for Peso (₱) Currency, Percentages, Dates & Numbers */
@@ -1191,54 +1220,57 @@ dialog.ledger-dialog::backdrop {
   }
 }
 
-/* Mobile & Small Screen Automatic Breakpoint */
-@media (max-width: 768px) {
-  .module-nav {
-    display: none;
-  }
-  .mobile-only-account-btn {
-    display: inline-flex;
-  }
-  .app-header__inner {
-    padding: 0.65rem 1rem;
-  }
-  .workspace {
-    padding: 1.15rem 0.9rem 5.5rem;
-  }
-  .coach-hero,
-  .grid-main-side,
-  .grid-2,
-  .grid-3,
-  .form-grid,
-  .how-it-works {
-    grid-template-columns: 1fr !important;
-    gap: 0.9rem;
-  }
-  .coach-hero {
-    padding: 1.15rem;
-  }
-  .ledger-card {
-    padding: 1rem;
-  }
-  .page-intro {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .page-actions {
-    width: 100%;
-  }
-  .page-actions .btn {
-    flex: 1;
-  }
-  .toast-region {
-    bottom: 4.5rem;
-    left: 0.9rem;
-    right: 0.9rem;
-    max-width: none;
-  }
-  .mobile-bottom-nav {
-    display: grid;
-  }
+/* ============================================================================
+   WALLET & EXPENSE FILTER RESPONSIVE HELPERS
+   ============================================================================ */
+
+.expense-filter-bar {
+  padding: 0.85rem 1.35rem;
+  background: var(--bg-vellum);
+  border-bottom: var(--border-hairline);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.wallet-hero-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.wallet-summary-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  background: var(--bg-vellum);
+  padding: 0.85rem 1.1rem;
+  border: var(--border-hairline);
+  min-width: 220px;
+  font-size: 0.84rem;
+}
+
+.wallet-sync-form {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: var(--border-dashed);
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.wallet-sync-input {
+  padding: 0.45rem 0.65rem;
+  font-size: 0.85rem;
+  border: var(--border-hairline);
+  flex: 1;
+  min-width: 160px;
+  max-width: 320px;
+  background-color: var(--bg-surface);
+  color: var(--ink-primary);
 }
 
 /* ============================================================================
@@ -1252,8 +1284,8 @@ dialog.ledger-dialog::backdrop {
 
 .landing-hero {
   text-align: center;
-  margin-bottom: 2rem;
-  padding: 1rem 0 0.5rem;
+  margin-bottom: 1.75rem;
+  padding: 0.75rem 0 0.5rem;
 }
 
 .landing-badge {
@@ -1273,17 +1305,17 @@ dialog.ledger-dialog::backdrop {
 
 .landing-title {
   font-family: var(--font-display);
-  font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+  font-size: clamp(1.55rem, 3.2vw, 2.45rem);
   font-weight: 800;
-  line-height: 1.15;
+  line-height: 1.18;
   letter-spacing: -0.03em;
-  margin-bottom: 0.65rem;
+  margin-bottom: 0.6rem;
 }
 
 .landing-lead {
-  font-size: clamp(0.92rem, 1.35vw, 1.05rem);
+  font-size: clamp(0.9rem, 1.35vw, 1.02rem);
   color: var(--ink-secondary);
-  max-width: 660px;
+  max-width: 640px;
   margin: 0 auto;
   line-height: 1.5;
 }
@@ -1407,4 +1439,149 @@ body.on-landing .mobile-only-account-btn {
 
 body.on-landing .workspace {
   padding-bottom: 3rem;
+}
+
+/* ============================================================================
+   MOBILE & SMALL SCREEN AUTOMATIC BREAKPOINT (ZERO HORIZONTAL SCROLL)
+   ============================================================================ */
+@media (max-width: 768px) {
+  .module-nav,
+  .desktop-only-header-btn,
+  .brand-tagline {
+    display: none !important;
+  }
+
+  .mobile-only-account-btn {
+    display: inline-flex;
+  }
+
+  .app-header__inner {
+    padding: 0.6rem 0.85rem;
+    flex-wrap: nowrap;
+    gap: 0.45rem;
+  }
+
+  .brand-stamp {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+  }
+
+  .brand-name {
+    font-size: 1.1rem;
+  }
+
+  .header-actions {
+    gap: 0.35rem;
+    flex-shrink: 0;
+  }
+
+  .header-actions .btn {
+    white-space: nowrap;
+    padding: 0.34rem 0.55rem;
+    font-size: 0.74rem;
+  }
+
+  .workspace {
+    padding: 1.1rem 0.85rem 5.5rem;
+    overflow-x: hidden;
+  }
+
+  .coach-hero,
+  .grid-main-side,
+  .grid-2,
+  .grid-3,
+  .form-grid,
+  .how-it-works,
+  .landing-grid,
+  .landing-pillars,
+  .expense-filter-bar {
+    grid-template-columns: 1fr !important;
+    gap: 0.9rem;
+  }
+
+  .coach-hero {
+    padding: 1.15rem;
+    gap: 1rem;
+  }
+
+  .coach-hero__headline {
+    font-size: 1.35rem;
+    line-height: 1.28;
+  }
+
+  .coach-hero__explain {
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+
+  .ledger-card,
+  .stat-card,
+  .landing-card,
+  .pillar-card,
+  .thermal-receipt {
+    padding: 1.1rem;
+  }
+
+  .expense-filter-bar {
+    padding: 0.85rem 1rem;
+  }
+
+  .page-intro {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1.15rem;
+  }
+
+  .page-subtitle {
+    font-size: 0.86rem;
+    line-height: 1.4;
+  }
+
+  .page-actions {
+    width: 100%;
+    display: flex;
+    gap: 0.45rem;
+    flex-wrap: nowrap;
+  }
+
+  .page-actions .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    white-space: nowrap;
+    padding: 0.52rem 0.35rem;
+    font-size: 0.78rem;
+  }
+
+  .wallet-summary-box {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .wallet-sync-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .wallet-sync-input {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .table-wrapper {
+    overflow-x: hidden;
+  }
+
+  .toast-region {
+    bottom: 4.5rem;
+    left: 0.85rem;
+    right: 0.85rem;
+    max-width: none;
+  }
+
+  .mobile-bottom-nav {
+    display: grid;
+  }
 }
