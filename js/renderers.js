@@ -1002,13 +1002,13 @@ export function renderReportsModule(state, metrics) {
   const nowStr = new Date().toLocaleDateString('en-PH', { dateStyle: 'medium' });
 
   return `
-    <div class="page-intro no-print">
+    <div class="page-intro">
       <div>
-        <h1 class="page-title">Summary &amp; Monthly Receipt</h1>
-        <p class="page-subtitle">See where your money went and print or export your student statement.</p>
+        <h1 class="page-title">Summary &amp; Receipt</h1>
+        <p class="page-subtitle">View your spending summary and download an image of your receipt.</p>
       </div>
       <div class="page-actions">
-        <button type="button" class="btn btn--primary" id="btn-print-receipt">Print Receipt</button>
+        <button type="button" class="btn btn--primary" id="btn-download-receipt-image">Download Receipt Image</button>
         <button type="button" class="btn btn--emerald" id="btn-export-csv">Export CSV</button>
       </div>
     </div>
@@ -1113,12 +1113,20 @@ export function renderReportsModule(state, metrics) {
         <div style="font-weight:700; font-size:0.78rem; margin:1rem 0 0.4rem;">
           ITEMIZED EXPENSES
         </div>
-        ${(state.expenses || []).map((exp) => `
+        ${(state.expenses || []).length === 0 ? `
+          <div style="font-size:0.76rem; color:var(--ink-secondary); padding:0.4rem 0;">No expenses logged yet.</div>
+        ` : (state.expenses || []).map((exp) => `
           <div class="receipt-line" style="font-size:0.76rem;">
             <span>${escapeHTML(exp.date)} — ${escapeHTML(exp.title)}</span>
             <span class="currency">-${formatPHP(exp.amount)}</span>
           </div>
         `).join('')}
+
+        <div style="margin-top:1.25rem; padding-top:0.85rem; border-top:1px dashed var(--ink-primary);">
+          <button type="button" class="btn btn--primary btn--block" id="btn-download-receipt-card">
+            Download Receipt Image (.PNG)
+          </button>
+        </div>
       </section>
     </div>
   `;
