@@ -1,0 +1,136 @@
+name: Build Native Android (.APK) & iOS (.IPA) Apps
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-android-apk:
+    name: Build Raw Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Setup Java JDK 21 (Required for Capacitor 7 & Gradle)
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NPM & Capacitor Dependencies
+        run: npm install
+
+      - name: Build Production Web Assets (dist/)
+        run: npm run build
+
+      - name: Generate & Sync Capacitor Android Native Project
+        run: |
+          if [ ! -d "android" ]; then
+            npx cap add android
+          fi
+          npx cap sync android
+
+      - name: Compile Raw Installable Android APK (assembleDebug)
+        working-directory: ./android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Prepare PESO-Android.apk
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk ./PESO-Android.apk
+          ls -lh ./PESO-Android.apk
+
+      - name: Upload PESO-Android.apk Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PESO-Android-APK
+          path: ./PESO-Android.apk
+          if-no-files-found: error
+
+      - name: Publish PESO-Android.apk to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v2.0.0
+          name: "PESO Native Mobile Apps (Android .APK & iOS .IPA)"
+          body: |
+            ### Direct Native Mobile Downloads for PESO
+            - **Android (`.apk`)**: Download **`PESO-Android.apk`** below, open it on your Android phone, and tap **Install**.
+            - **iOS (`.ipa`)**: Download **`PESO-iOS-Unsigned.ipa`** below and install it on your iPhone using **Sideloadly** or **AltStore** (or open `PESO-iOS-Xcode-Project.zip` in Xcode).
+          files: |
+            ./PESO-Android.apk
+          prerelease: false
+
+  build-ios-ipa:
+    name: Build Raw iOS IPA & Xcode Project
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install NPM & Capacitor Dependencies
+        run: npm install
+
+      - name: Build Production Web Assets (dist/)
+        run: npm run build
+
+      - name: Generate & Sync Capacitor iOS Native Project
+        run: |
+          if [ ! -d "ios" ]; then
+            npx cap add ios
+          fi
+          npx cap sync ios
+
+      - name: Package iOS Xcode Project Archive
+        run: |
+          zip -r PESO-iOS-Xcode-Project.zip ios
+
+      - name: Compile Unsigned iOS App & Package .IPA
+        run: |
+          cd ios/App
+          if [ -d "App.xcworkspace" ]; then
+            xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -sdk iphoneos -derivedDataPath build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO build
+          else
+            xcodebuild -project App.xcodeproj -scheme App -configuration Release -sdk iphoneos -derivedDataPath build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO build
+          fi
+          mkdir -p Payload
+          cp -r build/Build/Products/Release-iphoneos/App.app Payload/
+          zip -r ../../PESO-iOS-Unsigned.ipa Payload
+          cd ../..
+          ls -lh PESO-iOS-Unsigned.ipa
+
+      - name: Upload PESO-iOS-IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PESO-iOS-IPA
+          path: |
+            ./PESO-iOS-Unsigned.ipa
+            ./PESO-iOS-Xcode-Project.zip
+
+      - name: Publish PESO-iOS-Unsigned.ipa to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v2.0.0
+          name: "PESO Native Mobile Apps (Android .APK & iOS .IPA)"
+          files: |
+            ./PESO-iOS-Unsigned.ipa
+            ./PESO-iOS-Xcode-Project.zip
+          prerelease: false

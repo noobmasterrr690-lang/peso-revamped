@@ -860,11 +860,28 @@ class PesoApp {
             </div>
           </div>
 
-          <!-- CAPACITOR NATIVE BUILD COMMANDS -->
-          <div style="padding:0.85rem 1rem; background:var(--bg-vellum); border:var(--border-hairline); font-size:0.8rem;">
-            <strong>Native Mobile Packaging (Capacitor iOS &amp; Android + React):</strong>
-            <div class="mono" style="margin-top:0.35rem; font-size:0.75rem; color:var(--ink-secondary);">
-              npm run build &amp;&amp; npm run cap:sync | npm run cap:android | npm run cap:ios
+          <!-- DIRECT RAW .APK (ANDROID) & .IPA (iOS) DOWNLOADS -->
+          <div style="padding:1rem; background:var(--bg-vellum); border:var(--border-hairline); font-size:0.82rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.5rem;">
+              <strong style="font-family:var(--font-display); font-size:0.95rem;">Direct Native App Files (.APK &amp; .IPA)</strong>
+              <span class="status-badge status-badge--nominal">Capacitor 7 Cloud Build</span>
+            </div>
+            <p style="color:var(--ink-secondary); margin-bottom:0.75rem; line-height:1.45;">
+              Every GitHub push automatically compiles the native <strong>Android .APK</strong> and <strong>iOS .IPA</strong> on GitHub Actions and publishes them to your GitHub Releases page:
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.65rem;">
+              <a href="https://github.com/noobmasterrr690-lang/peso-revamped/releases/latest/download/PESO-Android.apk" target="_blank" rel="noopener noreferrer" class="btn btn--sm btn--emerald" style="text-decoration:none;">
+                Download Android (.APK)
+              </a>
+              <a href="https://github.com/noobmasterrr690-lang/peso-revamped/releases/latest/download/PESO-iOS-Unsigned.ipa" target="_blank" rel="noopener noreferrer" class="btn btn--sm btn--primary" style="text-decoration:none;">
+                Download iOS (.IPA)
+              </a>
+              <a href="https://github.com/noobmasterrr690-lang/peso-revamped/releases" target="_blank" rel="noopener noreferrer" class="btn btn--sm" style="text-decoration:none;">
+                View GitHub Releases
+              </a>
+            </div>
+            <div class="mono" style="font-size:0.73rem; color:var(--ink-secondary);">
+              Local CLI: npm run build ; npx cap add android ; npx cap sync
             </div>
           </div>
         </div>
