@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">PESO</string>
+    <string name="title_activity_main">PESO</string>
+    <string name="package_name">com.peso.studentledger</string>
+    <string name="custom_url_scheme">com.peso.studentledger</string>
+</resources>
