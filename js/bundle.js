@@ -3612,8 +3612,21 @@ class PesoApp {
 
     // Register Offline-First Service Worker for iOS & Android PWA Installation
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
+      navigator.serviceWorker.register('./sw.js?v=4').then((reg) => reg.update()).catch(() => {});
     }
+
+    // Lock horizontal scrolling completely on mobile touch devices
+    window.addEventListener('scroll', () => {
+      if (window.scrollX !== 0) {
+        window.scrollTo(0, window.scrollY);
+      }
+      if (document.documentElement.scrollLeft !== 0) {
+        document.documentElement.scrollLeft = 0;
+      }
+      if (document.body.scrollLeft !== 0) {
+        document.body.scrollLeft = 0;
+      }
+    }, { passive: true });
 
     // Capture Android / Chrome native PWA install prompt
     window.addEventListener('beforeinstallprompt', (e) => {

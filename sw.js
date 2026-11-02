@@ -2,7 +2,7 @@
  * PESO — Offline-First Service Worker for iOS & Android PWA Installation
  */
 
-const CACHE_NAME = 'peso-app-cache-v2';
+const CACHE_NAME = 'peso-app-cache-v4';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -46,7 +46,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
-    fetch(request)
+    fetch(request, { cache: 'no-cache' })
       .then((networkRes) => {
         if (networkRes && networkRes.status === 200 && url.origin === self.location.origin) {
           const clone = networkRes.clone();
