@@ -53,6 +53,12 @@ for (const targetDir of ['public', 'dist']) {
   fs.copyFileSync('manifest.webmanifest', path.join(targetDir, 'manifest.webmanifest'));
   fs.copyFileSync('sw.js', path.join(targetDir, 'sw.js'));
   fs.copyFileSync('icon.svg', path.join(targetDir, 'icon.svg'));
+  if (fs.existsSync('icon-192.png')) {
+    fs.copyFileSync('icon-192.png', path.join(targetDir, 'icon-192.png'));
+  }
+  if (fs.existsSync('PESO-iOS-Installer.mobileconfig')) {
+    fs.copyFileSync('PESO-iOS-Installer.mobileconfig', path.join(targetDir, 'PESO-iOS-Installer.mobileconfig'));
+  }
 }
 
 console.log('Production bundle and dist/ created successfully. Size:', bundle.length);

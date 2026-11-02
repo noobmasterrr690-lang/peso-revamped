@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>PayloadContent</key>
+  <array>
+    <dict>
+      <key>FullScreen</key>
+      <true/>
+      <key>IgnoreManifestScope</key>
+      <true/>
+      <key>Icon</key>
+      <data>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</data>
+      <key>IsRemovable</key>
+      <true/>
+      <key>Label</key>
+      <string>PESO</string>
+      <key>PayloadDescription</key>
+      <string>Installs the PESO Student Cash &amp; Allowance App on your iOS Home Screen in full-screen native mode.</string>
+      <key>PayloadDisplayName</key>
+      <string>PESO Student Cash App</string>
+      <key>PayloadIdentifier</key>
+      <string>com.peso.studentledger.webclip</string>
+      <key>PayloadType</key>
+      <string>com.apple.webClip.managed</string>
+      <key>PayloadUUID</key>
+      <string>8A7E5C90-4B2D-4F1E-9C3A-1D2E3F4A5B6C</string>
+      <key>PayloadVersion</key>
+      <integer>1</integer>
+      <key>Precomposed</key>
+      <true/>
+      <key>URL</key>
+      <string>https://noobmasterrr690-lang.github.io/peso-revamped/</string>
+    </dict>
+  </array>
+  <key>PayloadDescription</key>
+  <string>Official iOS Direct Installer for PESO (Pocket Expense &amp; Savings Organizer). Installs PESO as a full-screen iOS app without requiring an Apple Developer provisioning profile.</string>
+  <key>PayloadDisplayName</key>
+  <string>PESO — Student Cash App (iOS Installer)</string>
+  <key>PayloadIdentifier</key>
+  <string>com.peso.studentledger.profile</string>
+  <key>PayloadOrganization</key>
+  <string>PESO Student Ledger</string>
+  <key>PayloadRemovalDisallowed</key>
+  <false/>
+  <key>PayloadType</key>
+  <string>Configuration</string>
+  <key>PayloadUUID</key>
+  <string>1F2E3D4C-5B6A-4789-8A9B-0C1D2E3F4A5B</string>
+  <key>PayloadVersion</key>
+  <integer>1</integer>
+</dict>
+</plist>

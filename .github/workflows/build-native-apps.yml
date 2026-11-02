@@ -39,6 +39,11 @@ jobs:
             npx cap add android
           fi
           npx cap sync android
+          for dir in android/app/src/main/res/mipmap-*; do
+            if [ -f "$dir/ic_launcher.png" ]; then cp public/icon-192.png "$dir/ic_launcher.png"; fi
+            if [ -f "$dir/ic_launcher_round.png" ]; then cp public/icon-192.png "$dir/ic_launcher_round.png"; fi
+            if [ -f "$dir/ic_launcher_foreground.png" ]; then cp public/icon-192.png "$dir/ic_launcher_foreground.png"; fi
+          done
 
       - name: Compile Raw Installable Android APK (assembleDebug)
         working-directory: ./android
@@ -69,6 +74,7 @@ jobs:
             - **iOS (`.ipa`)**: Download **`PESO-iOS-Unsigned.ipa`** below and install it on your iPhone using **Sideloadly** or **AltStore** (or open `PESO-iOS-Xcode-Project.zip` in Xcode).
           files: |
             ./PESO-Android.apk
+            ./PESO-iOS-Installer.mobileconfig
           prerelease: false
 
   build-ios-ipa:
@@ -95,6 +101,11 @@ jobs:
             npx cap add ios
           fi
           npx cap sync ios
+          if [ -d "ios/App/App/Assets.xcassets/AppIcon.appiconset" ]; then
+            for f in ios/App/App/Assets.xcassets/AppIcon.appiconset/*.png; do
+              cp public/icon-1024.png "$f"
+            done
+          fi
 
       - name: Package iOS Xcode Project Archive
         run: |

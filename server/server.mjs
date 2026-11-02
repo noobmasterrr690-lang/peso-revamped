@@ -35,7 +35,10 @@ const MIME_TYPES = {
   '.svg': 'image/svg+xml',
   '.png': 'image/png',
   '.ico': 'image/x-icon',
-  '.woff2': 'font/woff2'
+  '.woff2': 'font/woff2',
+  '.mobileconfig': 'application/x-apple-aspen-config',
+  '.apk': 'application/vnd.android.package-archive',
+  '.ipa': 'application/octet-stream'
 };
 
 function getLanAddress() {

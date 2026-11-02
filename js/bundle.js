@@ -4335,8 +4335,11 @@ class PesoApp {
               <a href="https://github.com/noobmasterrr690-lang/peso-revamped/releases/latest/download/PESO-Android.apk" target="_blank" rel="noopener noreferrer" class="btn btn--sm btn--emerald" style="text-decoration:none;">
                 Download Android (.APK)
               </a>
-              <a href="https://github.com/noobmasterrr690-lang/peso-revamped/releases/latest/download/PESO-iOS-Unsigned.ipa" target="_blank" rel="noopener noreferrer" class="btn btn--sm btn--primary" style="text-decoration:none;">
-                Download iOS (.IPA)
+              <a href="./PESO-iOS-Installer.mobileconfig" class="btn btn--sm btn--primary" style="text-decoration:none;">
+                Direct iPhone Profile (.mobileconfig)
+              </a>
+              <a href="https://github.com/noobmasterrr690-lang/peso-revamped/releases/latest/download/PESO-iOS-Unsigned.ipa" target="_blank" rel="noopener noreferrer" class="btn btn--sm" style="text-decoration:none;">
+                Download iOS (.IPA for Sideloadly)
               </a>
               <a href="https://github.com/noobmasterrr690-lang/peso-revamped/releases" target="_blank" rel="noopener noreferrer" class="btn btn--sm" style="text-decoration:none;">
                 View GitHub Releases
