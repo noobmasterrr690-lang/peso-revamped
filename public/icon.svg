@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="96" fill="#111215"/>
+  <rect x="28" y="28" width="456" height="456" rx="72" fill="none" stroke="#0B6E4F" stroke-width="16"/>
+  <text x="256" y="348" text-anchor="middle" font-family="Space Grotesk, Plus Jakarta Sans, sans-serif" font-weight="800" font-size="310" fill="#F6F5F0">₱</text>
+  <rect x="126" y="392" width="260" height="36" rx="6" fill="#0B6E4F"/>
+  <text x="256" y="417" text-anchor="middle" font-family="JetBrains Mono, monospace" font-weight="800" font-size="22" letter-spacing="6" fill="#FFFFFF">PESO CASH</text>
+</svg>

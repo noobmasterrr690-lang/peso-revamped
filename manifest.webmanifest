@@ -1,0 +1,21 @@
+{
+  "id": "com.peso.studentledger",
+  "name": "PESO — Student Cash & Expense Organizer",
+  "short_name": "PESO",
+  "description": "Simple student physical cash allowance, daily safe-to-spend, and savings goal app for iOS and Android.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F6F5F0",
+  "theme_color": "#111215",
+  "categories": ["finance", "education", "productivity"],
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
