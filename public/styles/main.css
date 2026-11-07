@@ -113,6 +113,415 @@ input[type="date"] {
 }
 
 /* ============================================================================
+   OPENING LOADING SCREEN ANIMATION (THE LEDGER MINT BOOT SEQUENCE)
+   Strictly Zero Glassmorphism • Tactile Paper & Editorial Ledger Identity
+   ============================================================================ */
+
+@property --arc-start {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+@property --arc-end {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+@property --progress-dash-animation {
+  syntax: "*";
+  inherits: false;
+  initial-value: , progress-dash 3s ease-in-out infinite;
+}
+
+.peso-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background-color: var(--bg-canvas);
+  background-image:
+    linear-gradient(to right, rgba(17, 18, 21, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(17, 18, 21, 0.05) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 1;
+  translate: 0 0;
+  transition:
+    display 0.42s,
+    opacity 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    translate 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-behavior: allow-discrete;
+}
+
+.peso-splash:where([hidden], [data-closing]) {
+  opacity: 0;
+  translate: 0 -14px;
+  pointer-events: none;
+}
+
+.peso-splash[hidden] {
+  display: none;
+}
+
+.peso-splash__card {
+  width: min(410px, 92vw);
+  background-color: var(--bg-surface);
+  border: var(--border-heavy);
+  box-shadow:
+    6px 6px 0px var(--ink-primary),
+    11px 11px 0px var(--emerald);
+  overflow: hidden;
+  opacity: 1;
+  translate: 0 0;
+  transition:
+    opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+    translate 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@starting-style {
+  .peso-splash__card {
+    opacity: 0;
+    translate: 0 12px;
+  }
+}
+
+.peso-splash__topbar {
+  background-color: var(--ink-primary);
+  color: var(--bg-surface);
+  padding: 0.55rem 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border-bottom: var(--border-hairline);
+}
+
+.peso-splash__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: #10B981;
+}
+
+.peso-splash__dot {
+  width: 7px;
+  height: 7px;
+  background-color: #10B981;
+  display: inline-block;
+  animation: splash-dot-pulse 1s steps(2, start) infinite;
+}
+
+.peso-splash__body {
+  padding: 1.6rem 1.4rem 1.35rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.1rem;
+}
+
+.peso-splash__emblem-wrap {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  padding: 0.35rem;
+  background-color: var(--bg-vellum);
+  border: var(--border-hairline);
+  box-shadow: var(--shadow-tactile-sm);
+}
+
+.peso-splash__svg {
+  display: block;
+  width: 92px;
+  height: 92px;
+}
+
+.splash-svg-card {
+  transform-origin: center;
+  animation: splash-stamp-press 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.splash-svg-bar--top {
+  animation: splash-bar-slide 0.5s 0.12s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.splash-svg-bar--bottom {
+  animation: splash-bar-slide 0.5s 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.peso-splash__title-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.peso-splash__title-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.peso-splash__title {
+  font-family: var(--font-display);
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--ink-primary);
+}
+
+.peso-splash__pill {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 0.18rem 0.45rem;
+  background-color: var(--emerald-bg);
+  color: var(--emerald);
+  border: 1px solid var(--emerald);
+}
+
+.peso-splash__subtitle {
+  font-size: 0.82rem;
+  color: var(--ink-secondary);
+  font-weight: 500;
+}
+
+.peso-splash__telemetry {
+  width: 100%;
+  background-color: var(--bg-vellum);
+  border: var(--border-hairline);
+  padding: 0.75rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.peso-splash__status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.peso-splash__status-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.peso-splash__status-text {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ink-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.peso-splash__pct {
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: var(--emerald);
+}
+
+.peso-splash__meter {
+  width: 100%;
+  height: 11px;
+  background-color: var(--bg-surface);
+  border: var(--border-hairline);
+  position: relative;
+  overflow: hidden;
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent 0,
+    transparent calc(10% - 1px),
+    rgba(17, 18, 21, 0.12) calc(10% - 1px),
+    rgba(17, 18, 21, 0.12) 10%
+  );
+}
+
+.peso-splash__meter-fill {
+  height: 100%;
+  width: 24%;
+  background-color: var(--emerald);
+  animation: splash-meter-boot 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  transition: width 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes splash-meter-boot {
+  0% {
+    width: 14%;
+  }
+  100% {
+    width: 68%;
+  }
+}
+
+.peso-splash__footer {
+  background-color: var(--bg-subtle);
+  border-top: 2px dashed var(--ink-primary);
+  padding: 0.55rem 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.67rem;
+  font-weight: 700;
+  color: var(--ink-secondary);
+  letter-spacing: 0.04em;
+}
+
+/* Accessible <progress> Indeterminate Loading Spinner */
+progress.loading-spinner:indeterminate::-webkit-progress-bar {
+  display: none;
+  background: none;
+}
+progress.loading-spinner:indeterminate::-webkit-progress-value {
+  display: none;
+  background: none;
+}
+progress.loading-spinner:indeterminate::-moz-progress-bar {
+  display: none;
+  background: none;
+}
+progress.loading-spinner:indeterminate::slider-fill {
+  display: none;
+  background: none;
+}
+
+progress.loading-spinner:indeterminate {
+  --_from: calc(90deg + var(--arc-start, 0deg));
+  --_to: calc(90deg + var(--arc-end, 158deg));
+  --size: 16px;
+  --thickness: 2.5px;
+  --spinner-color: #0B6E4F;
+  --track-color: #D5D2C8;
+  --spinner-duration: 1.2s;
+  --_used-spinner-duration: var(--spinner-duration);
+
+  flex-shrink: 0;
+  position: relative;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  appearance: none;
+  background: conic-gradient(
+      from var(--_from),
+      var(--spinner-color) calc(var(--_to) - var(--_from)),
+      transparent 0
+    )
+    var(--track-color);
+
+  @supports (background-clip: border-area) {
+    background-clip: border-area;
+    border: var(--thickness) solid transparent;
+    background-origin: border-box;
+  }
+
+  @supports not (background-clip: border-area) {
+    --clip-boundary: calc(100% - var(--thickness));
+    mask-image: radial-gradient(
+      farthest-side,
+      transparent var(--clip-boundary),
+      black var(--clip-boundary)
+    );
+    border: 0;
+  }
+
+  animation:
+    progress-spin var(--_used-spinner-duration) linear infinite
+    var(--progress-dash-animation, );
+}
+
+@keyframes progress-spin {
+  to {
+    rotate: 1turn;
+  }
+}
+
+@keyframes progress-dash {
+  from {
+    --arc-start: 0deg;
+    --arc-end: 3deg;
+  }
+  50% {
+    --arc-start: 100deg;
+    --arc-end: 358deg;
+  }
+  to {
+    --arc-start: 360deg;
+    --arc-end: 363deg;
+  }
+}
+
+@keyframes splash-card-enter {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes splash-stamp-press {
+  0% {
+    transform: translate(-6px, -6px);
+  }
+  70% {
+    transform: translate(2px, 2px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes splash-bar-slide {
+  from {
+    transform: translateX(-18px);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes splash-dot-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .peso-splash {
+    translate: none;
+    transition-duration: 0.12s;
+  }
+  .peso-splash:where([hidden], [data-closing]) {
+    translate: none;
+  }
+  .peso-splash__card,
+  .splash-svg-card,
+  .splash-svg-bar--top,
+  .splash-svg-bar--bottom,
+  .peso-splash__dot {
+    animation: none;
+  }
+  progress.loading-spinner:indeterminate {
+    --_used-spinner-duration: 6s;
+  }
+}
+
+/* ============================================================================
    SINGLE CLEAN NAVIGATION HEADER
    ============================================================================ */
 
@@ -137,40 +546,77 @@ input[type="date"] {
 }
 
 .brand-lockup {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.7rem;
   text-decoration: none;
   color: var(--ink-primary);
+  transition: transform 100ms ease;
+}
+
+.brand-lockup:hover .brand-stamp {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px var(--emerald);
 }
 
 .brand-stamp {
-  width: 36px;
-  height: 36px;
-  background-color: var(--ink-primary);
-  color: var(--bg-surface);
-  border: var(--border-hairline);
-  box-shadow: 2px 2px 0px var(--emerald);
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
   display: grid;
   place-items: center;
-  font-family: var(--font-mono);
-  font-weight: 800;
-  font-size: 1.15rem;
+  background: transparent;
+  border: none;
+  box-shadow: 2px 2px 0px var(--emerald);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 100ms ease, box-shadow 100ms ease;
+}
+
+.brand-stamp__svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.brand-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .brand-name {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 1.2rem;
+  font-size: 1.24rem;
   letter-spacing: -0.03em;
   line-height: 1;
+}
+
+.brand-edition {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 0.1rem 0.35rem;
+  background-color: var(--emerald-bg);
+  color: var(--emerald);
+  border: 1px solid var(--emerald);
+  line-height: 1.1;
 }
 
 .brand-tagline {
   font-size: 0.72rem;
   color: var(--ink-secondary);
   display: block;
-  margin-top: 0.1rem;
+  margin-top: 0.14rem;
+  font-weight: 500;
 }
 
 /* Clean Pill Navigation */
@@ -835,6 +1281,17 @@ input.user-valid-fallback {
   margin-bottom: 1rem;
 }
 
+.receipt-brand-seal {
+  display: inline-grid;
+  place-items: center;
+  margin-bottom: 0.4rem;
+}
+
+.receipt-logo-svg {
+  box-shadow: 2px 2px 0px var(--emerald);
+  border-radius: 7px;
+}
+
 .receipt-title {
   font-family: var(--font-display);
   font-size: 1.1rem;
@@ -1334,6 +1791,34 @@ dialog.ledger-dialog::backdrop {
   padding: 0.75rem 0 0.5rem;
 }
 
+.landing-crest {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+.landing-crest__line {
+  width: 56px;
+  height: 2px;
+  background-color: var(--ink-primary);
+  position: relative;
+}
+
+.landing-crest__emblem {
+  display: inline-grid;
+  place-items: center;
+  padding: 0.25rem;
+  background-color: var(--bg-surface);
+  border: var(--border-hairline);
+  box-shadow: 3px 3px 0px var(--emerald);
+}
+
+.landing-crest__svg {
+  display: block;
+}
+
 .landing-badge {
   display: inline-flex;
   align-items: center;
@@ -1513,15 +1998,19 @@ body.on-landing .workspace {
   }
 
   .brand-stamp {
-    width: 30px;
-    height: 30px;
-    font-size: 0.95rem;
+    width: 34px;
+    height: 34px;
     border-radius: 7px;
-    box-shadow: none;
+    box-shadow: 2px 2px 0px var(--emerald);
   }
 
   .brand-name {
-    font-size: 1.08rem;
+    font-size: 1.1rem;
+  }
+
+  .brand-edition {
+    font-size: 0.56rem;
+    padding: 0.08rem 0.3rem;
   }
 
   .header-actions {

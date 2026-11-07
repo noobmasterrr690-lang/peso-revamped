@@ -1,9 +1,12 @@
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
-import crypto from 'node:crypto';
+import path from 'node:path';
 
 const chromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 const debugPort = 9249;
+
+const svgContent = fs.readFileSync('icon.svg', 'utf8');
+const svgDataUrl = `data:image/svg+xml;base64,${Buffer.from(svgContent, 'utf8').toString('base64')}`;
 
 const chrome = spawn(chromePath, [
   '--headless=new',
@@ -45,55 +48,137 @@ try {
 
   await send('Runtime.enable');
 
-  const renderIconBase64 = async (size) => {
+  // Render the master vector PESO Mint Stamp SVG at any target size or shape
+  const renderIconBase64 = async (size, mode = 'square') => {
     const res = await send('Runtime.evaluate', {
-      expression: `(() => {
+      awaitPromise: true,
+      returnByValue: true,
+      expression: `(async () => {
+        const img = new Image();
+        img.src = ${JSON.stringify(svgDataUrl)};
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+        });
+
         const canvas = document.createElement('canvas');
         canvas.width = ${size};
         canvas.height = ${size};
         const ctx = canvas.getContext('2d');
 
-        // Background: Carbon Ink (#111215)
-        ctx.fillStyle = '#111215';
-        ctx.fillRect(0, 0, ${size}, ${size});
-
-        // Inner Emerald Accent Frame (#0B6E4F)
-        const inset = Math.round(${size} * 0.08);
-        ctx.strokeStyle = '#0B6E4F';
-        ctx.lineWidth = Math.max(4, Math.round(${size} * 0.035));
-        ctx.strokeRect(inset, inset, ${size} - inset * 2, ${size} - inset * 2);
-
-        // Crisp Alabaster Peso Symbol
-        ctx.fillStyle = '#F6F5F0';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.font = '800 ' + Math.round(${size} * 0.56) + 'px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-        ctx.fillText('₱', ${size} / 2, ${size} * 0.50);
-
-        // Bottom label "PESO"
-        ctx.fillStyle = '#10B981';
-        ctx.font = '800 ' + Math.round(${size} * 0.11) + 'px monospace';
-        ctx.fillText('PESO', ${size} / 2, ${size} * 0.83);
+        if (${JSON.stringify(mode)} === 'round') {
+          ctx.beginPath();
+          ctx.arc(${size} / 2, ${size} / 2, ${size} / 2, 0, Math.PI * 2);
+          ctx.closePath();
+          ctx.clip();
+          ctx.fillStyle = '#111215';
+          ctx.fillRect(0, 0, ${size}, ${size});
+          const pad = Math.round(${size} * 0.06);
+          ctx.drawImage(img, pad, pad, ${size} - pad * 2, ${size} - pad * 2);
+        } else if (${JSON.stringify(mode)} === 'foreground') {
+          // Android Adaptive Icon Foreground (108dp viewport with 66dp safe zone)
+          const pad = Math.round(${size} * 0.18);
+          ctx.drawImage(img, pad, pad, ${size} - pad * 2, ${size} - pad * 2);
+        } else {
+          ctx.fillStyle = '#111215';
+          ctx.fillRect(0, 0, ${size}, ${size});
+          ctx.drawImage(img, 0, 0, ${size}, ${size});
+        }
 
         return canvas.toDataURL('image/png').split(',')[1];
-      })()`,
-      returnByValue: true
+      })()`
     });
     return res.result.result.value;
   };
 
-  const icon1024B64 = await renderIconBase64(1024);
-  const icon192B64 = await renderIconBase64(192);
+  // Render thematic Warm Ledger Paper splash screen with centered PESO Mint Stamp
+  const renderSplashBase64 = async (width, height) => {
+    const res = await send('Runtime.evaluate', {
+      awaitPromise: true,
+      returnByValue: true,
+      expression: `(async () => {
+        const img = new Image();
+        img.src = ${JSON.stringify(svgDataUrl)};
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+        });
+
+        const canvas = document.createElement('canvas');
+        canvas.width = ${width};
+        canvas.height = ${height};
+        const ctx = canvas.getContext('2d');
+
+        // Warm Ledger Paper Background (#F6F5F0)
+        ctx.fillStyle = '#F6F5F0';
+        ctx.fillRect(0, 0, ${width}, ${height});
+
+        // Subtle Architectural Grid Lines
+        ctx.strokeStyle = '#E6E3D8';
+        ctx.lineWidth = 1;
+        const step = Math.round(Math.min(${width}, ${height}) * 0.08);
+        for (let x = step; x < ${width}; x += step) {
+          ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, ${height}); ctx.stroke();
+        }
+        for (let y = step; y < ${height}; y += step) {
+          ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(${width}, y); ctx.stroke();
+        }
+
+        const iconSize = Math.round(Math.min(${width}, ${height}) * 0.28);
+        const ix = Math.round((${width} - iconSize) / 2);
+        const iy = Math.round((${height} - iconSize) / 2);
+        ctx.drawImage(img, ix, iy, iconSize, iconSize);
+
+        return canvas.toDataURL('image/png').split(',')[1];
+      })()`
+    });
+    return res.result.result.value;
+  };
+
+  const icon1024B64 = await renderIconBase64(1024, 'square');
+  const icon192B64 = await renderIconBase64(192, 'square');
 
   fs.mkdirSync('public', { recursive: true });
+  fs.mkdirSync('dist', { recursive: true });
   fs.mkdirSync('releases', { recursive: true });
-  fs.writeFileSync('public/icon-1024.png', Buffer.from(icon1024B64, 'base64'));
-  fs.writeFileSync('public/icon-192.png', Buffer.from(icon192B64, 'base64'));
-  fs.writeFileSync('icon-192.png', Buffer.from(icon192B64, 'base64'));
+
+  for (const dir of ['.', 'public', 'dist']) {
+    fs.writeFileSync(path.join(dir, 'icon-1024.png'), Buffer.from(icon1024B64, 'base64'));
+    fs.writeFileSync(path.join(dir, 'icon-192.png'), Buffer.from(icon192B64, 'base64'));
+  }
+
+  // Update Android native launcher icons & splash screens if android/ exists
+  const androidResDir = path.join('android', 'app', 'src', 'main', 'res');
+  if (fs.existsSync(androidResDir)) {
+    const mipmapSpecs = [
+      { folder: 'mipmap-mdpi', launcher: 48, foreground: 108 },
+      { folder: 'mipmap-hdpi', launcher: 72, foreground: 162 },
+      { folder: 'mipmap-xhdpi', launcher: 96, foreground: 216 },
+      { folder: 'mipmap-xxhdpi', launcher: 144, foreground: 324 },
+      { folder: 'mipmap-xxxhdpi', launcher: 192, foreground: 432 }
+    ];
+
+    for (const spec of mipmapSpecs) {
+      const targetFolder = path.join(androidResDir, spec.folder);
+      if (fs.existsSync(targetFolder)) {
+        const sqB64 = await renderIconBase64(spec.launcher, 'square');
+        const rdB64 = await renderIconBase64(spec.launcher, 'round');
+        const fgB64 = await renderIconBase64(spec.foreground, 'foreground');
+        fs.writeFileSync(path.join(targetFolder, 'ic_launcher.png'), Buffer.from(sqB64, 'base64'));
+        fs.writeFileSync(path.join(targetFolder, 'ic_launcher_round.png'), Buffer.from(rdB64, 'base64'));
+        fs.writeFileSync(path.join(targetFolder, 'ic_launcher_foreground.png'), Buffer.from(fgB64, 'base64'));
+      }
+    }
+
+    const splashB64 = await renderSplashBase64(1080, 1920);
+    const mainSplashPath = path.join(androidResDir, 'drawable', 'splash.png');
+    if (fs.existsSync(path.dirname(mainSplashPath))) {
+      fs.writeFileSync(mainSplashPath, Buffer.from(splashB64, 'base64'));
+    }
+  }
 
   // Generate Native iOS Configuration Profile (.mobileconfig) that installs PESO
   // directly onto iPhone Home Screen via iOS Settings -> Profile Downloaded -> Install
-  // with ZERO provisioning profile errors and ZERO 7-day expiration!
   const mobileconfigXml = `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -152,7 +237,7 @@ try {
   fs.writeFileSync('releases/PESO-iOS-Installer.mobileconfig', mobileconfigXml, 'utf8');
   fs.writeFileSync('public/PESO-iOS-Installer.mobileconfig', mobileconfigXml, 'utf8');
   fs.writeFileSync('PESO-iOS-Installer.mobileconfig', mobileconfigXml, 'utf8');
-  console.log('Generated public/icon-1024.png, public/icon-192.png, and PESO-iOS-Installer.mobileconfig');
+  console.log('Generated PESO Mint Stamp icons (1024, 192, Android mipmaps, and iOS .mobileconfig)');
   ws.close();
 } finally {
   chrome.kill();

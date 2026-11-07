@@ -44,7 +44,12 @@ ${appCode}
 fs.writeFileSync('js/bundle.js', bundle, 'utf8');
 
 // Sync to public/ and dist/ so Capacitor (iOS/Android), Vite, and GitHub Pages have complete assets
-for (const targetDir of ['public', 'dist']) {
+const targetDirs = ['public', 'dist'];
+if (fs.existsSync('android/app/src/main/assets/public')) {
+  targetDirs.push('android/app/src/main/assets/public');
+}
+
+for (const targetDir of targetDirs) {
   fs.mkdirSync(path.join(targetDir, 'js'), { recursive: true });
   fs.mkdirSync(path.join(targetDir, 'styles'), { recursive: true });
   fs.writeFileSync(path.join(targetDir, 'js', 'bundle.js'), bundle, 'utf8');
@@ -55,6 +60,9 @@ for (const targetDir of ['public', 'dist']) {
   fs.copyFileSync('icon.svg', path.join(targetDir, 'icon.svg'));
   if (fs.existsSync('icon-192.png')) {
     fs.copyFileSync('icon-192.png', path.join(targetDir, 'icon-192.png'));
+  }
+  if (fs.existsSync('icon-1024.png')) {
+    fs.copyFileSync('icon-1024.png', path.join(targetDir, 'icon-1024.png'));
   }
   if (fs.existsSync('PESO-iOS-Installer.mobileconfig')) {
     fs.copyFileSync('PESO-iOS-Installer.mobileconfig', path.join(targetDir, 'PESO-iOS-Installer.mobileconfig'));

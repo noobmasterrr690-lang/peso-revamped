@@ -1,14 +1,15 @@
-﻿/**
- * PESO â€” Offline-First Service Worker for iOS & Android PWA Installation
+/**
+ * PESO — Offline-First Service Worker for iOS & Android PWA Installation
  */
 
-const CACHE_NAME = 'peso-app-cache-v9';
+const CACHE_NAME = 'peso-app-cache-v10';
 const CORE_ASSETS = [
   './',
   './index.html',
   './styles/main.css',
   './js/bundle.js',
   './icon.svg',
+  './icon-192.png',
   './manifest.webmanifest'
 ];
 

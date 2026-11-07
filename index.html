@@ -1,32 +1,168 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>PESO â€” Student Cash Expense &amp; Budget App</title>
-  <meta name="description" content="PESO (Personal Expense & Spending Organizer) â€” Full-stack student cash budgeting app with SQLite database, installable on iOS and Android.">
-  <meta name="theme-color" content="#FFFFFF">
+  <title>PESO — Student Cash Expense &amp; Budget App</title>
+  <meta name="description" content="PESO (Personal Expense &amp; Spending Organizer) — Full-stack student cash budgeting app with SQLite database, installable on iOS and Android.">
+  <meta name="theme-color" content="#111215">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="PESO">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="./icon.svg">
-  <link rel="apple-touch-icon" href="./icon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+  <link rel="apple-touch-icon" href="./icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles/main.css?v=9">
+  <link rel="stylesheet" href="./styles/main.css?v=10">
 </head>
 <body>
+  <!-- EDITORIAL LEDGER & MINT STAMP OPENING LOADING SCREEN -->
+  <div id="peso-splash-loader" class="peso-splash" role="status" aria-live="polite" aria-label="Loading PESO Student Ledger">
+    <div class="peso-splash__card">
+      <div class="peso-splash__topbar">
+        <span class="mono">SERIES 2026 // STUDENT LEDGER</span>
+        <span class="peso-splash__badge">
+          <span class="peso-splash__dot" aria-hidden="true"></span>
+          BSP-MINT GRADE
+        </span>
+      </div>
+
+      <div class="peso-splash__body">
+        <!-- Animated Tactile PESO Mint Stamp Logo -->
+        <div class="peso-splash__emblem-wrap" aria-hidden="true">
+          <svg class="peso-splash__svg" viewBox="0 0 512 512" width="96" height="96" fill="none">
+            <rect width="512" height="512" rx="108" fill="#111215"/>
+            <g stroke="#1C1E24" stroke-width="2">
+              <line x1="0" y1="128" x2="512" y2="128"/>
+              <line x1="0" y1="256" x2="512" y2="256"/>
+              <line x1="0" y1="384" x2="512" y2="384"/>
+              <line x1="128" y1="0" x2="128" y2="512"/>
+              <line x1="256" y1="0" x2="256" y2="512"/>
+              <line x1="384" y1="0" x2="384" y2="512"/>
+            </g>
+            <rect x="24" y="24" width="464" height="464" rx="86" stroke="#0B6E4F" stroke-width="5"/>
+            <!-- Tactile Emerald Offset Shadow -->
+            <rect class="splash-svg-shadow" x="86" y="64" width="356" height="312" rx="24" fill="#0B6E4F"/>
+            <!-- Warm Ledger Paper Card -->
+            <g class="splash-svg-card">
+              <rect x="72" y="50" width="356" height="312" rx="24" fill="#F6F5F0" stroke="#111215" stroke-width="10"/>
+              <rect x="90" y="68" width="320" height="276" rx="14" stroke="#C5C2B8" stroke-width="2.5" stroke-dasharray="8 6"/>
+              <g class="splash-svg-corners" stroke="#0B6E4F" stroke-width="4" stroke-linecap="square">
+                <path d="M104 98 V82 H120"/>
+                <path d="M380 82 H396 V98"/>
+                <path d="M104 314 V330 H120"/>
+                <path d="M380 330 H396 V314"/>
+              </g>
+              <g stroke="#E5E2D9" stroke-width="2.5">
+                <line x1="104" y1="138" x2="396" y2="138"/>
+                <line x1="104" y1="206" x2="396" y2="206"/>
+                <line x1="104" y1="274" x2="396" y2="274"/>
+              </g>
+              <!-- Peso Monogram Shadow & Stem -->
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M178 96 H274 A74 74 0 0 1 274 244 H222 V320 H178 Z M222 132 V208 H270 A38 38 0 0 0 270 132 Z"
+                fill="#D5D2C8"/>
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M170 88 H266 A74 74 0 0 1 266 236 H214 V312 H170 Z M214 124 V200 H262 A38 38 0 0 0 262 124 Z"
+                fill="#111215"/>
+              <!-- Warm Paper Knockout Slices + Animated Double Currency Strike-Bars -->
+              <g class="splash-svg-bar splash-svg-bar--top">
+                <rect x="132" y="122" width="236" height="28" rx="7" fill="#F6F5F0"/>
+                <rect x="136" y="126" width="228" height="20" rx="5" fill="#0B6E4F" stroke="#111215" stroke-width="4.5"/>
+                <line x1="144" y1="133" x2="356" y2="133" stroke="#10B981" stroke-width="3" stroke-linecap="round"/>
+              </g>
+              <g class="splash-svg-bar splash-svg-bar--bottom">
+                <rect x="132" y="164" width="236" height="28" rx="7" fill="#F6F5F0"/>
+                <rect x="136" y="168" width="228" height="20" rx="5" fill="#0B6E4F" stroke="#111215" stroke-width="4.5"/>
+                <line x1="144" y1="175" x2="356" y2="175" stroke="#10B981" stroke-width="3" stroke-linecap="round"/>
+              </g>
+            </g>
+            <!-- Bottom Mint Serial Plate -->
+            <rect x="116" y="402" width="292" height="54" rx="10" fill="#074733"/>
+            <rect x="110" y="394" width="292" height="54" rx="10" fill="#0B6E4F" stroke="#10B981" stroke-width="3"/>
+            <rect x="130" y="416" width="10" height="10" rx="2" fill="#10B981"/>
+            <rect x="372" y="416" width="10" height="10" rx="2" fill="#10B981"/>
+            <g stroke="#F6F5F0" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter" fill="none">
+              <path d="M192 434 V408 H206 A6.5 6.5 0 0 1 206 421 H192"/>
+              <path d="M246 408 H228 V434 H246 M228 421 H243"/>
+              <path d="M282 408 H264 V421 H282 V434 H264"/>
+              <rect x="298" y="408" width="20" height="26" rx="2"/>
+            </g>
+          </svg>
+        </div>
+
+        <div class="peso-splash__title-group">
+          <div class="peso-splash__title-row">
+            <span class="peso-splash__title">PESO</span>
+            <span class="peso-splash__pill">CASH ORGANIZER</span>
+          </div>
+          <p class="peso-splash__subtitle">Personal Expense &amp; Spending Organizer</p>
+        </div>
+
+        <!-- Telemetry Progress Box -->
+        <div class="peso-splash__telemetry">
+          <div class="peso-splash__status-row">
+            <div class="peso-splash__status-left">
+              <progress aria-label="Loading PESO Student Ledger" class="loading-spinner"></progress>
+              <span id="splash-status-text" class="mono peso-splash__status-text">INITIALIZING CASH LEDGER...</span>
+            </div>
+            <span id="splash-pct-text" class="mono peso-splash__pct">18%</span>
+          </div>
+          <div class="peso-splash__meter" aria-hidden="true">
+            <div id="splash-meter-fill" class="peso-splash__meter-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="peso-splash__footer mono">
+        <span>SAFE-TO-SPEND PACE</span>
+        <span>•</span>
+        <span>SAVINGS VAULTS</span>
+        <span>•</span>
+        <span>PHP (₱)</span>
+      </div>
+    </div>
+  </div>
+
   <!-- SINGLE CLEAN NAVIGATION HEADER -->
   <header class="app-header">
     <div class="app-header__inner">
       <a href="#home" class="brand-lockup" id="brand-header-link" aria-label="PESO Home">
-        <div class="brand-stamp" aria-hidden="true">â‚±</div>
-        <div>
-          <span class="brand-name">PESO</span>
-          <span class="brand-tagline">Student Budget &amp; Savings</span>
+        <div class="brand-stamp" aria-hidden="true">
+          <svg class="brand-stamp__svg" viewBox="0 0 120 120" width="40" height="40" fill="none">
+            <!-- Carbon Ink Outer Frame -->
+            <rect x="2" y="2" width="116" height="116" rx="22" fill="#111215" stroke="#111215" stroke-width="4"/>
+            <!-- Emerald Offset Shadow -->
+            <rect x="19" y="17" width="88" height="88" rx="14" fill="#0B6E4F"/>
+            <!-- Warm Ledger Paper Stamp Surface -->
+            <rect x="13" y="11" width="88" height="88" rx="14" fill="#F6F5F0" stroke="#111215" stroke-width="4"/>
+            <!-- Corner Registration Ticks -->
+            <path d="M22 28 V20 H30 M84 20 H92 V28 M22 82 V90 H30 M84 90 H92 V82" stroke="#0B6E4F" stroke-width="2.5" stroke-linecap="square"/>
+            <!-- Tactile Shadow of Peso Monogram -->
+            <path fill-rule="evenodd" clip-rule="evenodd"
+              d="M41 26 H67 A19 19 0 0 1 67 64 H53 V84 H41 Z M53 36 V54 H65 A9 9 0 0 0 65 36 Z"
+              fill="#D5D2C8"/>
+            <!-- Carbon Ink Peso (₱) Monogram -->
+            <path fill-rule="evenodd" clip-rule="evenodd"
+              d="M38 23 H64 A19 19 0 0 1 64 61 H50 V81 H38 Z M50 33 V51 H62 A9 9 0 0 0 62 33 Z"
+              fill="#111215"/>
+            <!-- Warm Paper Knockout Slices + Dual Bangko Sentral Emerald Strike-Bars -->
+            <rect x="27" y="31.5" width="62" height="9" rx="3" fill="#F6F5F0"/>
+            <rect x="27" y="43.5" width="62" height="9" rx="3" fill="#F6F5F0"/>
+            <rect x="29" y="33" width="58" height="6" rx="2" fill="#0B6E4F" stroke="#111215" stroke-width="1.8"/>
+            <rect x="29" y="45" width="58" height="6" rx="2" fill="#0B6E4F" stroke="#111215" stroke-width="1.8"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div class="brand-name-row">
+            <span class="brand-name">PESO</span>
+            <span class="brand-edition">LEDGER</span>
+          </div>
+          <span class="brand-tagline">Student Cash &amp; Allowance</span>
         </div>
       </a>
 
@@ -113,9 +249,9 @@
 
         <div class="form-grid">
           <div class="field">
-            <label for="modal-exp-amount">Amount (â‚±)</label>
+            <label for="modal-exp-amount">Amount (₱)</label>
             <input type="number" id="modal-exp-amount" name="amount" step="0.01" min="0.01" required>
-            <div class="error-msg">Enter an amount greater than â‚±0.</div>
+            <div class="error-msg">Enter an amount greater than ₱0.</div>
           </div>
 
           <div class="field">
@@ -185,7 +321,7 @@
         </div>
         <div class="form-grid">
           <div class="field">
-            <label for="ql-amount">Amount (â‚±)</label>
+            <label for="ql-amount">Amount (₱)</label>
             <input type="number" id="ql-amount" name="amount" step="0.01" min="0.01" required placeholder="0.00">
             <div class="error-msg">Enter a positive amount.</div>
           </div>
@@ -295,6 +431,6 @@
   <div id="toast-region" class="toast-region" aria-live="polite"></div>
 
   <!-- SCRIPT -->
-  <script src="./js/bundle.js?v=9"></script>
+  <script src="./js/bundle.js?v=10"></script>
 </body>
 </html>

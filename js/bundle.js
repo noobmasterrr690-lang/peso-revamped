@@ -2030,6 +2030,27 @@ function escapeHTML(str) {
     .replace(/'/g, '&#39;');
 }
 
+function renderPesoLogoSvg(size = 44, className = 'peso-inline-logo') {
+  return `
+    <svg class="${escapeHTML(className)}" viewBox="0 0 120 120" width="${Number(size)}" height="${Number(size)}" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="116" height="116" rx="22" fill="#111215" stroke="#111215" stroke-width="4"/>
+      <rect x="19" y="17" width="88" height="88" rx="14" fill="#0B6E4F"/>
+      <rect x="13" y="11" width="88" height="88" rx="14" fill="#F6F5F0" stroke="#111215" stroke-width="4"/>
+      <path d="M22 28 V20 H30 M84 20 H92 V28 M22 82 V90 H30 M84 90 H92 V82" stroke="#0B6E4F" stroke-width="2.5" stroke-linecap="square"/>
+      <path fill-rule="evenodd" clip-rule="evenodd"
+        d="M41 26 H67 A19 19 0 0 1 67 64 H53 V84 H41 Z M53 36 V54 H65 A9 9 0 0 0 65 36 Z"
+        fill="#D5D2C8"/>
+      <path fill-rule="evenodd" clip-rule="evenodd"
+        d="M38 23 H64 A19 19 0 0 1 64 61 H50 V81 H38 Z M50 33 V51 H62 A9 9 0 0 0 62 33 Z"
+        fill="#111215"/>
+      <rect x="27" y="31.5" width="62" height="9" rx="3" fill="#F6F5F0"/>
+      <rect x="27" y="43.5" width="62" height="9" rx="3" fill="#F6F5F0"/>
+      <rect x="29" y="33" width="58" height="6" rx="2" fill="#0B6E4F" stroke="#111215" stroke-width="1.8"/>
+      <rect x="29" y="45" width="58" height="6" rx="2" fill="#0B6E4F" stroke="#111215" stroke-width="1.8"/>
+    </svg>
+  `.trim();
+}
+
 function getStatusBadgeHTML(status, pct = null) {
   const pctText = pct !== null ? ` (${Math.round(pct)}%)` : '';
   if (status === 'BREACH') {
@@ -3089,6 +3110,9 @@ function renderReportsModule(state, metrics) {
       <!-- RIGHT: CLEAN PRINTABLE RECEIPT -->
       <section class="thermal-receipt" id="printable-monthly-receipt" aria-label="Monthly Student Receipt">
         <div class="receipt-header">
+          <div class="receipt-brand-seal" aria-hidden="true">
+            ${renderPesoLogoSvg(38, 'receipt-logo-svg')}
+          </div>
           <div class="receipt-title">PESO STUDENT RECEIPT</div>
           <div style="font-size:0.76rem; color:var(--ink-secondary); margin-top:0.2rem;">
             ${escapeHTML(state.student.fullName)} • ${escapeHTML(nowStr)}
@@ -3152,7 +3176,14 @@ function renderLandingPage(state, activeAuthTab = 'register') {
     <div class="landing-container">
       <!-- HERO BANNER -->
       <section class="landing-hero" aria-label="Welcome to PESO">
-        <div class="landing-badge">Student Cash &amp; Allowance App</div>
+        <div class="landing-crest" aria-hidden="true">
+          <span class="landing-crest__line"></span>
+          <div class="landing-crest__emblem">
+            ${renderPesoLogoSvg(52, 'landing-crest__svg')}
+          </div>
+          <span class="landing-crest__line"></span>
+        </div>
+        <div class="landing-badge">PESO • Student Cash &amp; Allowance Ledger</div>
         <h1 class="landing-title">Stretch your student allowance without the stress.</h1>
         <p class="landing-lead">
           Manage your daily pocket cash, know how much is safe to spend today, and set aside savings so your allowance lasts all month.
@@ -3580,6 +3611,44 @@ function attachDialogLightDismissFallback(dialog) {
   }
 }
 
+let supportsDisplayTransition;
+function canTransitionDisplay() {
+  if (supportsDisplayTransition !== undefined) return supportsDisplayTransition;
+  if (!window.CSS?.supports?.('transition-behavior', 'allow-discrete') || !document.body) {
+    return false;
+  }
+  const probe = document.createElement('div');
+  probe.style.cssText = 'transition: display 1s allow-discrete !important; display: block;';
+  document.body.appendChild(probe);
+  getComputedStyle(probe).display;
+  probe.style.display = 'none';
+  supportsDisplayTransition = getComputedStyle(probe).display === 'block';
+  probe.remove();
+  return supportsDisplayTransition;
+}
+
+async function hideElement(el) {
+  if (!el) return;
+  if (canTransitionDisplay()) {
+    el.hidden = true;
+  } else {
+    el.setAttribute('data-closing', '');
+  }
+
+  const animations = el.getAnimations ? el.getAnimations() : [];
+  if (animations.length > 0) {
+    await Promise.race([
+      Promise.allSettled(animations.map((a) => a.finished)),
+      new Promise((r) => setTimeout(r, 1200))
+    ]);
+  }
+
+  if (el.hasAttribute('data-closing')) {
+    el.removeAttribute('data-closing');
+    el.hidden = true;
+  }
+}
+
 // ============================================================================
 // MAIN APPLICATION CONTROLLER
 // ============================================================================
@@ -3620,7 +3689,7 @@ class PesoApp {
 
     // Register Offline-First Service Worker for iOS & Android PWA Installation
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js?v=4').then((reg) => reg.update()).catch(() => {});
+      navigator.serviceWorker.register('./sw.js?v=10').then((reg) => reg.update()).catch(() => {});
     }
 
     // Lock horizontal scrolling completely on mobile touch devices
@@ -3657,6 +3726,38 @@ class PesoApp {
     this.bindGlobalEvents();
     this.renderShellTelemetry();
     this.renderActiveModule();
+    this.initSplashLoader();
+  }
+
+  initSplashLoader() {
+    const splashEl = document.getElementById('peso-splash-loader');
+    if (!splashEl) return;
+
+    const statusTextEl = document.getElementById('splash-status-text');
+    const pctTextEl = document.getElementById('splash-pct-text');
+    const meterFillEl = document.getElementById('splash-meter-fill');
+
+    const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+    const steps = [
+      { delay: prefersReducedMotion ? 80 : 180, pct: 44, text: 'VERIFYING CASH LEDGER...' },
+      { delay: prefersReducedMotion ? 220 : 520, pct: 82, text: 'SYNCING SAVINGS VAULTS...' },
+      { delay: prefersReducedMotion ? 380 : 880, pct: 100, text: 'SAFE-TO-SPEND READY' }
+    ];
+
+    steps.forEach((step) => {
+      setTimeout(() => {
+        if (statusTextEl) statusTextEl.textContent = step.text;
+        if (pctTextEl) pctTextEl.textContent = `${step.pct}%`;
+        if (meterFillEl) {
+          meterFillEl.style.animation = 'none';
+          meterFillEl.style.width = `${step.pct}%`;
+        }
+      }, step.delay);
+    });
+
+    setTimeout(() => {
+      hideElement(splashEl);
+    }, prefersReducedMotion ? 560 : 1240);
   }
 
   showToast(message, variant = 'emerald') {
@@ -5030,7 +5131,7 @@ class PesoApp {
     const itemRowH = 31;
 
     // Calculate exact dynamic height matching #printable-monthly-receipt in the app
-    const headerH = 74;
+    const headerH = 114;
     const summaryH = summaryRowH * 5;
     const totalBoxH = 48;
     const itemizedHeaderH = 40;
@@ -5065,9 +5166,30 @@ class PesoApp {
 
     const leftX = cardX + cardPad;
     const rightX = cardX + cardW - cardPad;
-    let y = cardY + cardPad + 18;
+    let y = cardY + cardPad;
 
-    // 4. .receipt-header (centered title + student name & date + 2px dashed #111215 bottom border)
+    // 4a. Draw PESO Mint Stamp Emblem centered in receipt header
+    const sealSize = 34;
+    const sealX = Math.round(width / 2 - sealSize / 2);
+    const sealY = y;
+    ctx.fillStyle = '#0B6E4F';
+    ctx.fillRect(sealX + 2, sealY + 2, sealSize, sealSize);
+    ctx.fillStyle = '#F6F5F0';
+    ctx.fillRect(sealX, sealY, sealSize, sealSize);
+    ctx.strokeStyle = '#111215';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(sealX, sealY, sealSize, sealSize);
+    ctx.fillStyle = '#111215';
+    ctx.textAlign = 'center';
+    ctx.font = '800 20px "Space Grotesk", -apple-system, sans-serif';
+    ctx.fillText('₱', width / 2, sealY + 24);
+    ctx.fillStyle = '#0B6E4F';
+    ctx.fillRect(sealX + 6, sealY + 11, sealSize - 12, 2.2);
+    ctx.fillRect(sealX + 6, sealY + 15.5, sealSize - 12, 2.2);
+
+    y += sealSize + 22;
+
+    // 4b. .receipt-header (centered title + student name & date + 2px dashed #111215 bottom border)
     ctx.textAlign = 'center';
     ctx.fillStyle = '#111215';
     ctx.font = '800 18px "Space Grotesk", -apple-system, BlinkMacSystemFont, sans-serif';

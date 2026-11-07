@@ -1,7 +1,84 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <rect width="512" height="512" rx="96" fill="#111215"/>
-  <rect x="28" y="28" width="456" height="456" rx="72" fill="none" stroke="#0B6E4F" stroke-width="16"/>
-  <text x="256" y="348" text-anchor="middle" font-family="Space Grotesk, Plus Jakarta Sans, sans-serif" font-weight="800" font-size="310" fill="#F6F5F0">₱</text>
-  <rect x="126" y="392" width="260" height="36" rx="6" fill="#0B6E4F"/>
-  <text x="256" y="417" text-anchor="middle" font-family="JetBrains Mono, monospace" font-weight="800" font-size="22" letter-spacing="6" fill="#FFFFFF">PESO CASH</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" fill="none">
+  <!-- Outer Carbon Ink Vault Squircle -->
+  <rect width="512" height="512" rx="108" fill="#111215"/>
+
+  <!-- Subtle Architectural Ledger Grid on Dark Ground -->
+  <g stroke="#1C1E24" stroke-width="2">
+    <line x1="0" y1="128" x2="512" y2="128"/>
+    <line x1="0" y1="256" x2="512" y2="256"/>
+    <line x1="0" y1="384" x2="512" y2="384"/>
+    <line x1="128" y1="0" x2="128" y2="512"/>
+    <line x1="256" y1="0" x2="256" y2="512"/>
+    <line x1="384" y1="0" x2="384" y2="512"/>
+  </g>
+
+  <!-- Outer Bangko Sentral Emerald Frame -->
+  <rect x="24" y="24" width="464" height="464" rx="86" stroke="#0B6E4F" stroke-width="6"/>
+
+  <!-- Tactile Emerald Offset Shadow for Ledger Card -->
+  <rect x="86" y="64" width="356" height="312" rx="24" fill="#0B6E4F"/>
+
+  <!-- Warm Ledger Paper Card (#F6F5F0) with Carbon Ink Border -->
+  <rect x="72" y="50" width="356" height="312" rx="24" fill="#F6F5F0" stroke="#111215" stroke-width="10"/>
+
+  <!-- Inner Editorial Dashed Rule -->
+  <rect x="90" y="68" width="320" height="276" rx="14" stroke="#C5C2B8" stroke-width="2.5" stroke-dasharray="8 6"/>
+
+  <!-- Precision Corner Registration Marks Inside Ledger Card -->
+  <g stroke="#0B6E4F" stroke-width="4.5" stroke-linecap="square">
+    <path d="M104 98 V82 H120"/>
+    <path d="M380 82 H396 V98"/>
+    <path d="M104 314 V330 H120"/>
+    <path d="M380 330 H396 V314"/>
+  </g>
+
+  <!-- Ledger Horizontal Rulings -->
+  <g stroke="#E5E2D9" stroke-width="2.5">
+    <line x1="104" y1="138" x2="396" y2="138"/>
+    <line x1="104" y1="206" x2="396" y2="206"/>
+    <line x1="104" y1="274" x2="396" y2="274"/>
+  </g>
+
+  <!-- Tactile Offset Shadow of Philippine Peso (₱) Monogram -->
+  <path fill-rule="evenodd" clip-rule="evenodd"
+    d="M178 96 H274 A74 74 0 0 1 274 244 H222 V320 H178 Z M222 132 V208 H270 A38 38 0 0 0 270 132 Z"
+    fill="#D5D2C8"/>
+
+  <!-- Main Carbon Ink Philippine Peso (₱) Stem & Bowl -->
+  <path fill-rule="evenodd" clip-rule="evenodd"
+    d="M170 88 H266 A74 74 0 0 1 266 236 H214 V312 H170 Z M214 124 V200 H262 A38 38 0 0 0 262 124 Z"
+    fill="#111215"/>
+
+  <!-- Warm Paper Knockout Slices so the Double Peso Strike-Bars Pop at Every Scale -->
+  <rect x="132" y="122" width="236" height="28" rx="7" fill="#F6F5F0"/>
+  <rect x="132" y="164" width="236" height="28" rx="7" fill="#F6F5F0"/>
+
+  <!-- Double Horizontal Peso Currency Strike-Bars (Bangko Sentral Emerald + Mint Highlight) -->
+  <rect x="136" y="126" width="228" height="20" rx="5" fill="#0B6E4F" stroke="#111215" stroke-width="4.5"/>
+  <line x1="144" y1="133" x2="356" y2="133" stroke="#10B981" stroke-width="3" stroke-linecap="round"/>
+
+  <rect x="136" y="168" width="228" height="20" rx="5" fill="#0B6E4F" stroke="#111215" stroke-width="4.5"/>
+  <line x1="144" y1="175" x2="356" y2="175" stroke="#10B981" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Bottom Mint Serial Plate Shadow -->
+  <rect x="116" y="402" width="292" height="54" rx="10" fill="#074733"/>
+
+  <!-- Bottom Mint Serial Plate ("PESO" Pure Vector Wordmark) -->
+  <rect x="110" y="394" width="292" height="54" rx="10" fill="#0B6E4F" stroke="#10B981" stroke-width="3"/>
+
+  <!-- Mint Plate Registration Studs -->
+  <rect x="130" y="416" width="10" height="10" rx="2" fill="#10B981"/>
+  <rect x="372" y="416" width="10" height="10" rx="2" fill="#10B981"/>
+
+  <!-- Pure Geometric Vector Wordmark: P E S O -->
+  <g stroke="#F6F5F0" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter" fill="none">
+    <!-- P -->
+    <path d="M192 434 V408 H206 A6.5 6.5 0 0 1 206 421 H192"/>
+    <!-- E -->
+    <path d="M246 408 H228 V434 H246 M228 421 H243"/>
+    <!-- S -->
+    <path d="M282 408 H264 V421 H282 V434 H264"/>
+    <!-- O -->
+    <rect x="298" y="408" width="20" height="26" rx="2"/>
+  </g>
 </svg>

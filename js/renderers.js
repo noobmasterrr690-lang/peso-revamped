@@ -20,6 +20,27 @@ export function escapeHTML(str) {
     .replace(/'/g, '&#39;');
 }
 
+export function renderPesoLogoSvg(size = 44, className = 'peso-inline-logo') {
+  return `
+    <svg class="${escapeHTML(className)}" viewBox="0 0 120 120" width="${Number(size)}" height="${Number(size)}" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="116" height="116" rx="22" fill="#111215" stroke="#111215" stroke-width="4"/>
+      <rect x="19" y="17" width="88" height="88" rx="14" fill="#0B6E4F"/>
+      <rect x="13" y="11" width="88" height="88" rx="14" fill="#F6F5F0" stroke="#111215" stroke-width="4"/>
+      <path d="M22 28 V20 H30 M84 20 H92 V28 M22 82 V90 H30 M84 90 H92 V82" stroke="#0B6E4F" stroke-width="2.5" stroke-linecap="square"/>
+      <path fill-rule="evenodd" clip-rule="evenodd"
+        d="M41 26 H67 A19 19 0 0 1 67 64 H53 V84 H41 Z M53 36 V54 H65 A9 9 0 0 0 65 36 Z"
+        fill="#D5D2C8"/>
+      <path fill-rule="evenodd" clip-rule="evenodd"
+        d="M38 23 H64 A19 19 0 0 1 64 61 H50 V81 H38 Z M50 33 V51 H62 A9 9 0 0 0 62 33 Z"
+        fill="#111215"/>
+      <rect x="27" y="31.5" width="62" height="9" rx="3" fill="#F6F5F0"/>
+      <rect x="27" y="43.5" width="62" height="9" rx="3" fill="#F6F5F0"/>
+      <rect x="29" y="33" width="58" height="6" rx="2" fill="#0B6E4F" stroke="#111215" stroke-width="1.8"/>
+      <rect x="29" y="45" width="58" height="6" rx="2" fill="#0B6E4F" stroke="#111215" stroke-width="1.8"/>
+    </svg>
+  `.trim();
+}
+
 export function getStatusBadgeHTML(status, pct = null) {
   const pctText = pct !== null ? ` (${Math.round(pct)}%)` : '';
   if (status === 'BREACH') {
@@ -1079,6 +1100,9 @@ export function renderReportsModule(state, metrics) {
       <!-- RIGHT: CLEAN PRINTABLE RECEIPT -->
       <section class="thermal-receipt" id="printable-monthly-receipt" aria-label="Monthly Student Receipt">
         <div class="receipt-header">
+          <div class="receipt-brand-seal" aria-hidden="true">
+            ${renderPesoLogoSvg(38, 'receipt-logo-svg')}
+          </div>
           <div class="receipt-title">PESO STUDENT RECEIPT</div>
           <div style="font-size:0.76rem; color:var(--ink-secondary); margin-top:0.2rem;">
             ${escapeHTML(state.student.fullName)} • ${escapeHTML(nowStr)}
@@ -1142,7 +1166,14 @@ export function renderLandingPage(state, activeAuthTab = 'register') {
     <div class="landing-container">
       <!-- HERO BANNER -->
       <section class="landing-hero" aria-label="Welcome to PESO">
-        <div class="landing-badge">Student Cash &amp; Allowance App</div>
+        <div class="landing-crest" aria-hidden="true">
+          <span class="landing-crest__line"></span>
+          <div class="landing-crest__emblem">
+            ${renderPesoLogoSvg(52, 'landing-crest__svg')}
+          </div>
+          <span class="landing-crest__line"></span>
+        </div>
+        <div class="landing-badge">PESO • Student Cash &amp; Allowance Ledger</div>
         <h1 class="landing-title">Stretch your student allowance without the stress.</h1>
         <p class="landing-lead">
           Manage your daily pocket cash, know how much is safe to spend today, and set aside savings so your allowance lasts all month.

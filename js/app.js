@@ -118,6 +118,44 @@ function attachDialogLightDismissFallback(dialog) {
   }
 }
 
+let supportsDisplayTransition;
+function canTransitionDisplay() {
+  if (supportsDisplayTransition !== undefined) return supportsDisplayTransition;
+  if (!window.CSS?.supports?.('transition-behavior', 'allow-discrete') || !document.body) {
+    return false;
+  }
+  const probe = document.createElement('div');
+  probe.style.cssText = 'transition: display 1s allow-discrete !important; display: block;';
+  document.body.appendChild(probe);
+  getComputedStyle(probe).display;
+  probe.style.display = 'none';
+  supportsDisplayTransition = getComputedStyle(probe).display === 'block';
+  probe.remove();
+  return supportsDisplayTransition;
+}
+
+async function hideElement(el) {
+  if (!el) return;
+  if (canTransitionDisplay()) {
+    el.hidden = true;
+  } else {
+    el.setAttribute('data-closing', '');
+  }
+
+  const animations = el.getAnimations ? el.getAnimations() : [];
+  if (animations.length > 0) {
+    await Promise.race([
+      Promise.allSettled(animations.map((a) => a.finished)),
+      new Promise((r) => setTimeout(r, 1200))
+    ]);
+  }
+
+  if (el.hasAttribute('data-closing')) {
+    el.removeAttribute('data-closing');
+    el.hidden = true;
+  }
+}
+
 // ============================================================================
 // MAIN APPLICATION CONTROLLER
 // ============================================================================
@@ -158,7 +196,7 @@ class PesoApp {
 
     // Register Offline-First Service Worker for iOS & Android PWA Installation
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js?v=4').then((reg) => reg.update()).catch(() => {});
+      navigator.serviceWorker.register('./sw.js?v=10').then((reg) => reg.update()).catch(() => {});
     }
 
     // Lock horizontal scrolling completely on mobile touch devices
@@ -195,6 +233,38 @@ class PesoApp {
     this.bindGlobalEvents();
     this.renderShellTelemetry();
     this.renderActiveModule();
+    this.initSplashLoader();
+  }
+
+  initSplashLoader() {
+    const splashEl = document.getElementById('peso-splash-loader');
+    if (!splashEl) return;
+
+    const statusTextEl = document.getElementById('splash-status-text');
+    const pctTextEl = document.getElementById('splash-pct-text');
+    const meterFillEl = document.getElementById('splash-meter-fill');
+
+    const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+    const steps = [
+      { delay: prefersReducedMotion ? 80 : 180, pct: 44, text: 'VERIFYING CASH LEDGER...' },
+      { delay: prefersReducedMotion ? 220 : 520, pct: 82, text: 'SYNCING SAVINGS VAULTS...' },
+      { delay: prefersReducedMotion ? 380 : 880, pct: 100, text: 'SAFE-TO-SPEND READY' }
+    ];
+
+    steps.forEach((step) => {
+      setTimeout(() => {
+        if (statusTextEl) statusTextEl.textContent = step.text;
+        if (pctTextEl) pctTextEl.textContent = `${step.pct}%`;
+        if (meterFillEl) {
+          meterFillEl.style.animation = 'none';
+          meterFillEl.style.width = `${step.pct}%`;
+        }
+      }, step.delay);
+    });
+
+    setTimeout(() => {
+      hideElement(splashEl);
+    }, prefersReducedMotion ? 560 : 1240);
   }
 
   showToast(message, variant = 'emerald') {
@@ -1568,7 +1638,7 @@ class PesoApp {
     const itemRowH = 31;
 
     // Calculate exact dynamic height matching #printable-monthly-receipt in the app
-    const headerH = 74;
+    const headerH = 114;
     const summaryH = summaryRowH * 5;
     const totalBoxH = 48;
     const itemizedHeaderH = 40;
@@ -1603,9 +1673,30 @@ class PesoApp {
 
     const leftX = cardX + cardPad;
     const rightX = cardX + cardW - cardPad;
-    let y = cardY + cardPad + 18;
+    let y = cardY + cardPad;
 
-    // 4. .receipt-header (centered title + student name & date + 2px dashed #111215 bottom border)
+    // 4a. Draw PESO Mint Stamp Emblem centered in receipt header
+    const sealSize = 34;
+    const sealX = Math.round(width / 2 - sealSize / 2);
+    const sealY = y;
+    ctx.fillStyle = '#0B6E4F';
+    ctx.fillRect(sealX + 2, sealY + 2, sealSize, sealSize);
+    ctx.fillStyle = '#F6F5F0';
+    ctx.fillRect(sealX, sealY, sealSize, sealSize);
+    ctx.strokeStyle = '#111215';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(sealX, sealY, sealSize, sealSize);
+    ctx.fillStyle = '#111215';
+    ctx.textAlign = 'center';
+    ctx.font = '800 20px "Space Grotesk", -apple-system, sans-serif';
+    ctx.fillText('₱', width / 2, sealY + 24);
+    ctx.fillStyle = '#0B6E4F';
+    ctx.fillRect(sealX + 6, sealY + 11, sealSize - 12, 2.2);
+    ctx.fillRect(sealX + 6, sealY + 15.5, sealSize - 12, 2.2);
+
+    y += sealSize + 22;
+
+    // 4b. .receipt-header (centered title + student name & date + 2px dashed #111215 bottom border)
     ctx.textAlign = 'center';
     ctx.fillStyle = '#111215';
     ctx.font = '800 18px "Space Grotesk", -apple-system, BlinkMacSystemFont, sans-serif';
