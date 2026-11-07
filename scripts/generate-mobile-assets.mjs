@@ -215,7 +215,7 @@ try {
     </dict>
   </array>
   <key>PayloadDescription</key>
-  <string>Official iOS Direct Installer for PESO (Pocket Expense &amp; Savings Organizer). Installs PESO as a full-screen iOS app without requiring an Apple Developer provisioning profile.</string>
+  <string>Official iOS Direct Installer for PESO (Personal Expense &amp; Savings Organizer). Installs PESO as a full-screen iOS app without requiring an Apple Developer provisioning profile.</string>
   <key>PayloadDisplayName</key>
   <string>PESO — Student Cash App (iOS Installer)</string>
   <key>PayloadIdentifier</key>

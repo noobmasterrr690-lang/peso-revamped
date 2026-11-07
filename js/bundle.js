@@ -3110,9 +3110,6 @@ function renderReportsModule(state, metrics) {
       <!-- RIGHT: CLEAN PRINTABLE RECEIPT -->
       <section class="thermal-receipt" id="printable-monthly-receipt" aria-label="Monthly Student Receipt">
         <div class="receipt-header">
-          <div class="receipt-brand-seal" aria-hidden="true">
-            ${renderPesoLogoSvg(38, 'receipt-logo-svg')}
-          </div>
           <div class="receipt-title">PESO STUDENT RECEIPT</div>
           <div style="font-size:0.76rem; color:var(--ink-secondary); margin-top:0.2rem;">
             ${escapeHTML(state.student.fullName)} • ${escapeHTML(nowStr)}
@@ -3176,14 +3173,7 @@ function renderLandingPage(state, activeAuthTab = 'register') {
     <div class="landing-container">
       <!-- HERO BANNER -->
       <section class="landing-hero" aria-label="Welcome to PESO">
-        <div class="landing-crest" aria-hidden="true">
-          <span class="landing-crest__line"></span>
-          <div class="landing-crest__emblem">
-            ${renderPesoLogoSvg(52, 'landing-crest__svg')}
-          </div>
-          <span class="landing-crest__line"></span>
-        </div>
-        <div class="landing-badge">PESO • Student Cash &amp; Allowance Ledger</div>
+        <div class="landing-badge">Personal Expense &amp; Savings Organizer</div>
         <h1 class="landing-title">Stretch your student allowance without the stress.</h1>
         <p class="landing-lead">
           Manage your daily pocket cash, know how much is safe to spend today, and set aside savings so your allowance lasts all month.
@@ -3689,7 +3679,7 @@ class PesoApp {
 
     // Register Offline-First Service Worker for iOS & Android PWA Installation
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js?v=10').then((reg) => reg.update()).catch(() => {});
+      navigator.serviceWorker.register('./sw.js?v=11').then((reg) => reg.update()).catch(() => {});
     }
 
     // Lock horizontal scrolling completely on mobile touch devices
@@ -3739,9 +3729,8 @@ class PesoApp {
 
     const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
     const steps = [
-      { delay: prefersReducedMotion ? 80 : 180, pct: 44, text: 'VERIFYING CASH LEDGER...' },
-      { delay: prefersReducedMotion ? 220 : 520, pct: 82, text: 'SYNCING SAVINGS VAULTS...' },
-      { delay: prefersReducedMotion ? 380 : 880, pct: 100, text: 'SAFE-TO-SPEND READY' }
+      { delay: prefersReducedMotion ? 60 : 140, pct: 58, text: 'LOADING LEDGER...' },
+      { delay: prefersReducedMotion ? 180 : 420, pct: 100, text: 'READY' }
     ];
 
     steps.forEach((step) => {
@@ -3757,7 +3746,7 @@ class PesoApp {
 
     setTimeout(() => {
       hideElement(splashEl);
-    }, prefersReducedMotion ? 560 : 1240);
+    }, prefersReducedMotion ? 320 : 720);
   }
 
   showToast(message, variant = 'emerald') {

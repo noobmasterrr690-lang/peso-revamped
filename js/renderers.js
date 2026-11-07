@@ -1100,9 +1100,6 @@ export function renderReportsModule(state, metrics) {
       <!-- RIGHT: CLEAN PRINTABLE RECEIPT -->
       <section class="thermal-receipt" id="printable-monthly-receipt" aria-label="Monthly Student Receipt">
         <div class="receipt-header">
-          <div class="receipt-brand-seal" aria-hidden="true">
-            ${renderPesoLogoSvg(38, 'receipt-logo-svg')}
-          </div>
           <div class="receipt-title">PESO STUDENT RECEIPT</div>
           <div style="font-size:0.76rem; color:var(--ink-secondary); margin-top:0.2rem;">
             ${escapeHTML(state.student.fullName)} • ${escapeHTML(nowStr)}
@@ -1166,14 +1163,7 @@ export function renderLandingPage(state, activeAuthTab = 'register') {
     <div class="landing-container">
       <!-- HERO BANNER -->
       <section class="landing-hero" aria-label="Welcome to PESO">
-        <div class="landing-crest" aria-hidden="true">
-          <span class="landing-crest__line"></span>
-          <div class="landing-crest__emblem">
-            ${renderPesoLogoSvg(52, 'landing-crest__svg')}
-          </div>
-          <span class="landing-crest__line"></span>
-        </div>
-        <div class="landing-badge">PESO • Student Cash &amp; Allowance Ledger</div>
+        <div class="landing-badge">Personal Expense &amp; Savings Organizer</div>
         <h1 class="landing-title">Stretch your student allowance without the stress.</h1>
         <p class="landing-lead">
           Manage your daily pocket cash, know how much is safe to spend today, and set aside savings so your allowance lasts all month.

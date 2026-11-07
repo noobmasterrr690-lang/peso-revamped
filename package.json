@@ -1,7 +1,7 @@
 {
   "name": "peso-student-ledger",
   "version": "2.0.0",
-  "description": "PESO (Personal Expense & Spending Organizer) — Full-Stack React + SQLite Student Cash Budgeting App for Web, iOS & Android",
+  "description": "PESO (Personal Expense & Savings Organizer) — Full-Stack React + SQLite Student Cash Budgeting App for Web, iOS & Android",
   "type": "module",
   "scripts": {
     "start": "node server/server.mjs",

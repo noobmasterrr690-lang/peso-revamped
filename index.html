@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>PESO — Student Cash Expense &amp; Budget App</title>
-  <meta name="description" content="PESO (Personal Expense &amp; Spending Organizer) — Full-stack student cash budgeting app with SQLite database, installable on iOS and Android.">
+  <title>PESO — Personal Expense &amp; Savings Organizer</title>
+  <meta name="description" content="PESO (Personal Expense &amp; Savings Organizer) — Student cash allowance, budget, and savings app.">
   <meta name="theme-color" content="#111215">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -16,25 +16,25 @@
   <link rel="apple-touch-icon" href="./icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles/main.css?v=10">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="./styles/main.css?v=11">
 </head>
 <body>
   <!-- EDITORIAL LEDGER & MINT STAMP OPENING LOADING SCREEN -->
-  <div id="peso-splash-loader" class="peso-splash" role="status" aria-live="polite" aria-label="Loading PESO Student Ledger">
+  <div id="peso-splash-loader" class="peso-splash" role="status" aria-live="polite" aria-label="Loading PESO">
     <div class="peso-splash__card">
       <div class="peso-splash__topbar">
-        <span class="mono">SERIES 2026 // STUDENT LEDGER</span>
+        <span class="mono">PESO</span>
         <span class="peso-splash__badge">
           <span class="peso-splash__dot" aria-hidden="true"></span>
-          BSP-MINT GRADE
+          STUDENT LEDGER
         </span>
       </div>
 
       <div class="peso-splash__body">
         <!-- Animated Tactile PESO Mint Stamp Logo -->
         <div class="peso-splash__emblem-wrap" aria-hidden="true">
-          <svg class="peso-splash__svg" viewBox="0 0 512 512" width="96" height="96" fill="none">
+          <svg class="peso-splash__svg" viewBox="0 0 512 512" width="84" height="84" fill="none">
             <rect width="512" height="512" rx="108" fill="#111215"/>
             <g stroke="#1C1E24" stroke-width="2">
               <line x1="0" y1="128" x2="512" y2="128"/>
@@ -96,19 +96,16 @@
         </div>
 
         <div class="peso-splash__title-group">
-          <div class="peso-splash__title-row">
-            <span class="peso-splash__title">PESO</span>
-            <span class="peso-splash__pill">CASH ORGANIZER</span>
-          </div>
-          <p class="peso-splash__subtitle">Personal Expense &amp; Spending Organizer</p>
+          <span class="peso-splash__title">PESO</span>
+          <p class="peso-splash__subtitle">Personal Expense &amp; Savings Organizer</p>
         </div>
 
         <!-- Telemetry Progress Box -->
         <div class="peso-splash__telemetry">
           <div class="peso-splash__status-row">
             <div class="peso-splash__status-left">
-              <progress aria-label="Loading PESO Student Ledger" class="loading-spinner"></progress>
-              <span id="splash-status-text" class="mono peso-splash__status-text">INITIALIZING CASH LEDGER...</span>
+              <progress aria-label="Loading PESO" class="loading-spinner"></progress>
+              <span id="splash-status-text" class="mono peso-splash__status-text">OPENING ORGANIZER...</span>
             </div>
             <span id="splash-pct-text" class="mono peso-splash__pct">18%</span>
           </div>
@@ -116,14 +113,6 @@
             <div id="splash-meter-fill" class="peso-splash__meter-fill"></div>
           </div>
         </div>
-      </div>
-
-      <div class="peso-splash__footer mono">
-        <span>SAFE-TO-SPEND PACE</span>
-        <span>•</span>
-        <span>SAVINGS VAULTS</span>
-        <span>•</span>
-        <span>PHP (₱)</span>
       </div>
     </div>
   </div>
@@ -133,7 +122,7 @@
     <div class="app-header__inner">
       <a href="#home" class="brand-lockup" id="brand-header-link" aria-label="PESO Home">
         <div class="brand-stamp" aria-hidden="true">
-          <svg class="brand-stamp__svg" viewBox="0 0 120 120" width="40" height="40" fill="none">
+          <svg class="brand-stamp__svg" viewBox="0 0 120 120" width="34" height="34" fill="none">
             <!-- Carbon Ink Outer Frame -->
             <rect x="2" y="2" width="116" height="116" rx="22" fill="#111215" stroke="#111215" stroke-width="4"/>
             <!-- Emerald Offset Shadow -->
@@ -157,13 +146,7 @@
             <rect x="29" y="45" width="58" height="6" rx="2" fill="#0B6E4F" stroke="#111215" stroke-width="1.8"/>
           </svg>
         </div>
-        <div class="brand-text">
-          <div class="brand-name-row">
-            <span class="brand-name">PESO</span>
-            <span class="brand-edition">LEDGER</span>
-          </div>
-          <span class="brand-tagline">Student Cash &amp; Allowance</span>
-        </div>
+        <span class="brand-name">PESO</span>
       </a>
 
       <!-- DESKTOP & TABLET NAVIGATION -->
@@ -431,6 +414,6 @@
   <div id="toast-region" class="toast-region" aria-live="polite"></div>
 
   <!-- SCRIPT -->
-  <script src="./js/bundle.js?v=10"></script>
+  <script src="./js/bundle.js?v=11"></script>
 </body>
 </html>
